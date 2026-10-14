@@ -4,8 +4,7 @@
   "description": "High-fidelity Adobe Acrobat Reader Continuous Track web application with client-side PDF editing, form designer, Bangla OCR engine, and digital signatures.",
   "main": "index.html",
   "scripts": {
-    "start": "python3 -m http.server 8080",
-    "build": "echo 'Static web assets ready for deployment'"
+    "start": "python3 -m http.server 8080"
   },
   "keywords": [
     "pdf",
