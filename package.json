@@ -1,0 +1,25 @@
+{
+  "name": "adobe-acrobat-reader-dc-clone",
+  "version": "2.0.0",
+  "description": "High-fidelity Adobe Acrobat Reader Continuous Track web application with client-side PDF editing, form designer, Bangla OCR engine, and digital signatures.",
+  "main": "index.html",
+  "scripts": {
+    "start": "python3 -m http.server 8080",
+    "build": "echo 'Static web assets ready for deployment'"
+  },
+  "keywords": [
+    "pdf",
+    "acrobat-reader",
+    "pdf-editor",
+    "pdf-lib",
+    "pdfjs",
+    "tesseract",
+    "ocr",
+    "bangla-ocr",
+    "pwa",
+    "vercel"
+  ],
+  "author": "Antigravity Pair Programmer",
+  "license": "MIT",
+  "homepage": "https://vercel.com"
+}

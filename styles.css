@@ -1,0 +1,2000 @@
+/* =====================================================================
+   ADOBE ACROBAT READER CLONE - DESIGN SYSTEM & STYLESHEET
+   Accurately modeled after Adobe Acrobat Pro / Reader Continuous Track
+   ===================================================================== */
+
+@font-face {
+  font-family: 'Noto Sans Bengali';
+  src: url('fonts/NotoSansBengali-VF.ttf') format('truetype');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Noto Serif Bengali';
+  src: url('fonts/NotoSerifBengali-VF.ttf') format('truetype');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --acrobat-red: #ea1b23;
+  --acrobat-red-hover: #c41219;
+  --acrobat-blue: #1473e6;
+  --acrobat-blue-hover: #0d66d0;
+  
+  --bg-titlebar: #1e1e1e;
+  --bg-menubar: #252525;
+  --bg-toolbar: #2d2d2d;
+  --bg-sidebar: #242424;
+  --bg-panel: #2d2d2d;
+  --bg-viewport: #525659;
+  --bg-floating: rgba(30, 30, 30, 0.92);
+
+  --border-color: #3e3e3e;
+  --border-light: rgba(255, 255, 255, 0.12);
+
+  --text-primary: #ffffff;
+  --text-secondary: #cccccc;
+  --text-muted: #8e8e8e;
+  --text-disabled: #555555;
+
+  --hover-bg: rgba(255, 255, 255, 0.08);
+  --active-bg: rgba(20, 115, 230, 0.25);
+  
+  --font-bangla-sans: 'Noto Sans Bengali', 'Hind Siliguri', 'Kalpurush', 'SolaimanLipi', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-bangla-serif: 'Noto Serif Bengali', 'Kalpurush', 'SolaimanLipi', 'Shonar Bangla', Georgia, serif;
+  --font-family: var(--font-bangla-sans);
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-pill: 24px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  user-select: none;
+}
+
+body {
+  font-family: var(--font-family);
+  background-color: var(--bg-titlebar);
+  color: var(--text-primary);
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Scrollbars */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: #333333;
+}
+::-webkit-scrollbar-thumb {
+  background: #555555;
+  border-radius: 5px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #777777;
+}
+
+/* =====================================================================
+   1. TITLE BAR & SYSTEM HEADER
+   ===================================================================== */
+#app-titlebar {
+  height: 38px;
+  background: var(--bg-titlebar);
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 12px;
+  font-size: 13px;
+  z-index: 100;
+}
+
+.titlebar-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.acrobat-logo {
+  width: 24px;
+  height: 24px;
+  background: var(--acrobat-red);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  color: #fff;
+  font-size: 15px;
+  letter-spacing: -1px;
+}
+
+.doc-name-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.doc-status-pill {
+  font-size: 10px;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 2px 6px;
+  border-radius: 3px;
+  color: var(--text-muted);
+}
+
+.titlebar-center {
+  display: flex;
+  align-items: center;
+}
+
+.global-search-box {
+  display: flex;
+  align-items: center;
+  background: #2a2a2a;
+  border: 1px solid var(--border-color);
+  border-radius: 18px;
+  padding: 4px 12px;
+  width: 320px;
+  gap: 8px;
+}
+
+.global-search-box input {
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--text-primary);
+  font-size: 12px;
+  width: 100%;
+}
+
+.global-search-box input::placeholder {
+  color: var(--text-muted);
+}
+
+.titlebar-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn-pill-primary {
+  background: var(--acrobat-blue);
+  color: #fff;
+  border: none;
+  padding: 5px 14px;
+  border-radius: 14px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: background 0.15s ease;
+}
+
+.btn-pill-primary:hover {
+  background: var(--acrobat-blue-hover);
+}
+
+.user-avatar {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: #4f46e5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: bold;
+}
+
+/* =====================================================================
+   2. GLOBAL MENU BAR (File, Edit, View...)
+   ===================================================================== */
+#app-menubar {
+  height: 30px;
+  background: var(--bg-menubar);
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  padding: 0 8px;
+  font-size: 12px;
+  gap: 2px;
+  z-index: 90;
+}
+
+.menu-item {
+  position: relative;
+  padding: 4px 10px;
+  border-radius: 3px;
+  cursor: pointer;
+  color: var(--text-secondary);
+}
+
+.menu-item:hover, .menu-item.active {
+  background: var(--hover-bg);
+  color: var(--text-primary);
+}
+
+.dropdown-panel {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: #2b2b2b;
+  border: 1px solid #444;
+  border-radius: 4px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+  min-width: 220px;
+  padding: 4px 0;
+  display: none;
+  z-index: 1000;
+}
+
+.menu-item.active .dropdown-panel {
+  display: block;
+}
+
+.dropdown-item {
+  padding: 7px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  color: #ddd;
+  cursor: pointer;
+}
+
+.dropdown-item:hover {
+  background: var(--acrobat-blue);
+  color: #fff;
+}
+
+.dropdown-divider {
+  height: 1px;
+  background: #3e3e3e;
+  margin: 4px 0;
+}
+
+.dropdown-shortcut {
+  font-size: 11px;
+  color: #888;
+}
+
+/* =====================================================================
+   3. QUICK TOOLS RIBBON
+   ===================================================================== */
+#app-toolbar {
+  height: 44px;
+  background: var(--bg-toolbar);
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 12px;
+  z-index: 80;
+}
+
+.toolbar-group {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.tool-separator {
+  width: 1px;
+  height: 22px;
+  background: var(--border-color);
+  margin: 0 6px;
+}
+
+.tool-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  width: 32px;
+  height: 32px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  position: relative;
+}
+
+.tool-btn:hover {
+  background: var(--hover-bg);
+  color: var(--text-primary);
+}
+
+.tool-btn.active {
+  background: var(--active-bg);
+  color: var(--acrobat-blue);
+}
+
+.zoom-selector-box {
+  display: flex;
+  align-items: center;
+  background: #202020;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  padding: 3px 6px;
+  font-size: 12px;
+  color: var(--text-primary);
+  gap: 4px;
+}
+
+.zoom-selector-box select {
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--text-primary);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+/* Mode Switcher Tabs (Comment, Fill & Sign, Organize) */
+.mode-tab-group {
+  display: flex;
+  align-items: center;
+  background: #202020;
+  border-radius: 6px;
+  padding: 2px;
+  border: 1px solid var(--border-color);
+}
+
+.mode-tab-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  padding: 5px 12px;
+  font-size: 12px;
+  font-weight: 500;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.mode-tab-btn:hover {
+  color: var(--text-primary);
+}
+
+.mode-tab-btn.active {
+  background: #383838;
+  color: #fff;
+  font-weight: 600;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+
+/* =====================================================================
+   4. CONTEXTUAL SECONDARY TOOLBAR (Comment / Annotate Bar)
+   ===================================================================== */
+#contextual-toolbar {
+  height: 38px;
+  background: #282828;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  gap: 8px;
+  font-size: 12px;
+}
+
+.contextual-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+  margin-right: 8px;
+}
+
+.color-dot-picker {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid #555;
+}
+.color-dot-picker.selected {
+  border-color: #fff;
+  box-shadow: 0 0 6px rgba(255,255,255,0.5);
+}
+
+/* =====================================================================
+   5. WORKSPACE CONTAINER (Left Sidebar, Canvas Viewport, Right Sidebar)
+   ===================================================================== */
+#app-workspace {
+  flex: 1;
+  display: flex;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Left Icon Rail & Collapsible Drawer */
+#left-nav-container {
+  display: flex;
+  height: 100%;
+  z-index: 50;
+}
+
+.left-icon-rail {
+  width: 44px;
+  background: var(--bg-sidebar);
+  border-right: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px 0;
+  gap: 8px;
+}
+
+.rail-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 4px;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.rail-btn:hover {
+  background: var(--hover-bg);
+  color: var(--text-primary);
+}
+
+.rail-btn.active {
+  background: var(--active-bg);
+  color: var(--acrobat-blue);
+  border-left: 3px solid var(--acrobat-blue);
+}
+
+.left-drawer-panel {
+  width: 250px;
+  background: #282828;
+  border-right: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  transition: width 0.2s ease;
+  overflow: hidden;
+}
+
+.left-drawer-panel.collapsed {
+  width: 0;
+  border-right: none;
+}
+
+.drawer-header {
+  height: 38px;
+  padding: 0 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border-color);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.drawer-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px;
+}
+
+/* Thumbnail Items */
+.thumb-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 14px;
+  cursor: pointer;
+}
+
+.thumb-preview-box {
+  width: 140px;
+  height: 180px;
+  background: #fff;
+  border: 1px solid #444;
+  border-radius: 2px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #333;
+  font-size: 10px;
+}
+
+.thumb-item.active .thumb-preview-box {
+  border: 2px solid var(--acrobat-blue);
+  box-shadow: 0 0 8px rgba(20, 115, 230, 0.6);
+}
+
+.thumb-label {
+  margin-top: 4px;
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+/* Bookmarks List */
+.bookmark-node {
+  padding: 6px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.bookmark-node:hover {
+  background: var(--hover-bg);
+  color: var(--text-primary);
+}
+
+/* =====================================================================
+   6. MAIN DOCUMENT VIEWPORT (PDF Canvas & Overlay Layers)
+   ===================================================================== */
+#document-viewport {
+  flex: 1;
+  background: var(--bg-viewport);
+  position: relative;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px 0 80px 0;
+  gap: 20px;
+}
+
+.pdf-page-container {
+  position: relative;
+  background: #ffffff;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+  border-radius: 2px;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+}
+
+.pdf-canvas-layer {
+  display: block;
+}
+
+.pdf-annotation-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: auto;
+}
+
+.pdf-text-layer {
+  position: absolute;
+  inset: 0;
+  color: transparent;
+  pointer-events: auto;
+  font-family: var(--font-bangla-sans);
+  text-rendering: optimizeLegibility;
+}
+
+.pdf-text-layer ::selection {
+  background: rgba(20, 115, 230, 0.35);
+}
+
+/* Interactive Sticky Note on Canvas */
+.sticky-note-pin {
+  position: absolute;
+  width: 26px;
+  height: 26px;
+  background: #f59e0b;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+  cursor: pointer;
+  z-index: 20;
+}
+
+.sticky-note-pin:hover {
+  transform: scale(1.1);
+}
+
+/* =====================================================================
+   7. FLOATING QUICK ACTION BAR (On Text Selection)
+   ===================================================================== */
+#floating-selection-menu {
+  position: absolute;
+  display: none;
+  background: #222222;
+  border: 1px solid #444;
+  border-radius: 20px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+  padding: 4px 8px;
+  gap: 6px;
+  align-items: center;
+  z-index: 200;
+}
+
+.sel-action-btn {
+  background: transparent;
+  border: none;
+  color: #fff;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.sel-action-btn:hover {
+  background: rgba(255,255,255,0.15);
+}
+
+/* =====================================================================
+   8. RIGHT-HAND "ALL TOOLS" SIDEBAR
+   ===================================================================== */
+#right-tools-sidebar {
+  width: 240px;
+  background: var(--bg-sidebar);
+  border-left: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  transition: width 0.2s ease;
+  z-index: 50;
+}
+
+#right-tools-sidebar.collapsed {
+  width: 44px;
+}
+
+.right-sidebar-header {
+  height: 42px;
+  padding: 0 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border-color);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.tools-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.tool-card-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  color: var(--text-secondary);
+  font-size: 13px;
+  transition: all 0.15s ease;
+}
+
+.tool-card-item:hover {
+  background: var(--hover-bg);
+  color: var(--text-primary);
+}
+
+.tool-card-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+}
+
+/* =====================================================================
+   9. BOTTOM FLOATING NAVIGATION HUD
+   ===================================================================== */
+#floating-nav-hud {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--bg-floating);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-pill);
+  padding: 6px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.6);
+  z-index: 90;
+  backdrop-filter: blur(16px);
+}
+
+.hud-btn {
+  background: transparent;
+  border: none;
+  color: #fff;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.hud-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.page-indicator-badge {
+  font-size: 12px;
+  font-weight: 500;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.page-input-field {
+  width: 34px;
+  background: #111;
+  border: 1px solid #444;
+  color: #fff;
+  font-size: 12px;
+  text-align: center;
+  border-radius: 4px;
+  padding: 2px;
+}
+
+/* =====================================================================
+   10. MODAL DIALOGS (Digital Signature / Certificate Modal)
+   ===================================================================== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-dialog {
+  width: 480px;
+  background: #2a2a2a;
+  border: 1px solid #444;
+  border-radius: 8px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.modal-header {
+  padding: 14px 18px;
+  background: #222;
+  border-bottom: 1px solid #3e3e3e;
+  font-size: 14px;
+  font-weight: 600;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-body {
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.signature-canvas-pad {
+  width: 100%;
+  height: 160px;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: crosshair;
+}
+
+.modal-footer {
+  padding: 12px 18px;
+  background: #222;
+  border-top: 1px solid #3e3e3e;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+/* =====================================================================
+   11. COMPONENT SUPPLEMENTS & MODAL INTERACTIONS
+   ===================================================================== */
+.modal-btn {
+  padding: 6px 16px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  transition: all 0.15s ease;
+}
+
+.modal-btn-secondary {
+  background: #3e3e3e;
+  color: #fff;
+}
+.modal-btn-secondary:hover {
+  background: #4e4e4e;
+}
+
+.modal-btn-primary {
+  background: var(--acrobat-blue);
+  color: #fff;
+}
+.modal-btn-primary:hover {
+  background: var(--acrobat-blue-hover);
+}
+
+.modal-btn-danger {
+  background: #c62828;
+  color: #fff;
+}
+.modal-btn-danger:hover {
+  background: #b71c1c;
+}
+
+.modal-close-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+}
+.modal-close-btn:hover {
+  color: #fff;
+  background: var(--hover-bg);
+}
+
+.tab-nav-bar {
+  display: flex;
+  gap: 8px;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 8px;
+  margin-bottom: 12px;
+}
+
+.tab-nav-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 13px;
+  font-weight: 500;
+  padding: 4px 10px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+.tab-nav-btn.active {
+  color: #fff;
+  background: #3a3a3a;
+}
+
+.signature-type-box {
+  display: none;
+  flex-direction: column;
+  gap: 10px;
+}
+.signature-type-box.active {
+  display: flex;
+}
+
+.signature-text-input {
+  background: #1e1e1e;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  padding: 8px 12px;
+  color: #fff;
+  font-size: 14px;
+}
+
+.signature-font-preview {
+  height: 100px;
+  background: #ffffff;
+  color: #111;
+  font-family: 'Brush Script MT', cursive, sans-serif;
+  font-size: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+}
+
+/* Comment card in Left Drawer */
+.comment-card {
+  background: #333333;
+  border-radius: 6px;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-left: 4px solid var(--acrobat-blue);
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.comment-card:hover {
+  background: #3c3c3c;
+}
+.comment-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+.comment-card-author {
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+.comment-card-body {
+  font-size: 12px;
+  color: var(--text-primary);
+  word-break: break-word;
+}
+.comment-card-page {
+  font-size: 10px;
+  background: rgba(255,255,255,0.1);
+  padding: 1px 5px;
+  border-radius: 3px;
+}
+
+/* Toast Notification */
+#toast-container {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 2000;
+  pointer-events: none;
+}
+
+.toast-pill {
+  background: #1e1e1e;
+  border: 1px solid var(--border-color);
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 12px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  animation: toastFadeIn 0.2s ease, toastFadeOut 0.3s ease 2.7s forwards;
+  pointer-events: auto;
+}
+@keyframes toastFadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes toastFadeOut {
+  from { opacity: 1; transform: translateY(0); }
+  to { opacity: 0; transform: translateY(10px); }
+}
+
+/* Pen drawing canvas overlay */
+.drawing-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.drawing-canvas.pen-active {
+  pointer-events: auto;
+  cursor: crosshair;
+}
+
+/* Rubber Stamp / Signature Placed on Document */
+.placed-signature-stamp {
+  position: absolute;
+  border: 1px dashed var(--acrobat-blue);
+  background: rgba(20, 115, 230, 0.05);
+  padding: 4px;
+  cursor: move;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.placed-signature-stamp img {
+  max-width: 100%;
+  max-height: 100%;
+  pointer-events: none;
+}
+
+/* Search Highlights */
+.search-highlight {
+  background-color: rgba(255, 235, 59, 0.6);
+  border-radius: 2px;
+}
+.search-highlight.active {
+  background-color: rgba(255, 152, 0, 0.85);
+}
+
+/* =====================================================================
+   12. PHASE 2: ADVANCED FORM FILLING, TEXT LAYER, & VECTOR MARKUP
+   ===================================================================== */
+
+/* Standard PDF.js Text Layer */
+.textLayer {
+  position: absolute;
+  text-align: initial;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  overflow: hidden;
+  line-height: 1.0;
+  user-select: text;
+  -webkit-user-select: text;
+  z-index: 10;
+}
+
+.textLayer span {
+  color: transparent;
+  position: absolute;
+  white-space: pre;
+  cursor: text;
+  transform-origin: 0% 0%;
+}
+
+.textLayer ::selection {
+  background: rgba(20, 115, 230, 0.38);
+}
+
+/* Two-Page Spread Layout */
+#document-viewport.two-page-mode #pages-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 24px;
+}
+
+/* Fill & Sign Contextual Toolbar */
+#fillsign-toolbar {
+  height: 40px;
+  background: #252525;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  gap: 8px;
+  font-size: 12px;
+  z-index: 75;
+}
+
+.fillsign-btn {
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--text-secondary);
+  padding: 4px 10px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.fillsign-btn:hover {
+  background: var(--hover-bg);
+  color: var(--text-primary);
+}
+
+.fillsign-btn.active {
+  background: var(--active-bg);
+  color: var(--acrobat-blue);
+  border-color: rgba(20, 115, 230, 0.4);
+}
+
+/* Placed Fill & Sign Text Box */
+.placed-fill-box {
+  position: absolute;
+  border: 1px solid transparent;
+  padding: 2px 4px;
+  cursor: move;
+  z-index: 40;
+  min-width: 60px;
+  display: flex;
+  align-items: center;
+  background: transparent;
+}
+
+.placed-fill-box:hover, .placed-fill-box.selected {
+  border-color: var(--acrobat-blue);
+  background: rgba(20, 115, 230, 0.05);
+}
+
+.placed-fill-input {
+  font-family: var(--font-bangla-sans);
+  font-size: 14px;
+  color: #0b0b0b;
+  outline: none;
+  border: none;
+  background: transparent;
+  white-space: pre-wrap;
+  min-width: 30px;
+  line-height: 1.45;
+  letter-spacing: normal;
+  text-rendering: optimizeLegibility;
+}
+
+.placed-fill-actions {
+  display: none;
+  position: absolute;
+  top: -28px;
+  left: 0;
+  background: #222;
+  border: 1px solid #444;
+  border-radius: 4px;
+  padding: 2px 4px;
+  gap: 4px;
+  z-index: 50;
+  align-items: center;
+}
+
+.placed-fill-box:hover .placed-fill-actions,
+.placed-fill-box.selected .placed-fill-actions {
+  display: flex;
+}
+
+.fill-act-btn {
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: 11px;
+  padding: 2px 6px;
+  cursor: pointer;
+  border-radius: 2px;
+}
+.fill-act-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.fill-act-select {
+  background: #181818;
+  color: #fff;
+  border: 1px solid #444;
+  border-radius: 3px;
+  font-size: 10px;
+  padding: 1px 4px;
+  cursor: pointer;
+  outline: none;
+  height: 20px;
+  max-width: 130px;
+}
+
+/* Placed Symbol Stamp (Check, Cross, Dot, Circle) */
+.placed-symbol-stamp {
+  position: absolute;
+  cursor: move;
+  z-index: 40;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.placed-symbol-stamp:hover {
+  outline: 1px dashed var(--acrobat-blue);
+}
+
+/* Vector Shape Annotations (Rectangle, Oval, Line, Arrow) */
+.vector-shape-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 15;
+}
+
+/* Measurement Tool Dimension Overlay */
+.measurement-badge {
+  position: absolute;
+  background: rgba(0, 0, 0, 0.85);
+  color: #00e676;
+  border: 1px solid #00e676;
+  border-radius: 3px;
+  padding: 2px 6px;
+  font-size: 10px;
+  font-weight: 600;
+  font-family: monospace;
+  pointer-events: none;
+  white-space: nowrap;
+  transform: translate(-50%, -100%);
+  z-index: 25;
+}
+
+/* Permanent Text Markup Rectangles */
+.markup-rect {
+  position: absolute;
+  pointer-events: auto;
+  border-radius: 2px;
+  cursor: pointer;
+  z-index: 12;
+}
+
+.markup-highlight {
+  background-color: rgba(255, 235, 59, 0.42);
+}
+
+.markup-underline {
+  border-bottom: 2px solid #1473e6;
+}
+
+.markup-strikethrough {
+  border-bottom: 2px solid #e53935;
+  top: 50%;
+}
+
+/* Read / Presentation Mode */
+body.read-mode #app-titlebar,
+body.read-mode #app-menubar,
+body.read-mode #app-toolbar,
+body.read-mode #contextual-toolbar,
+body.read-mode #fillsign-toolbar,
+body.read-mode #left-nav-container,
+body.read-mode #right-tools-sidebar {
+  display: none !important;
+}
+
+body.read-mode #read-mode-exit-btn {
+  display: flex;
+}
+
+#read-mode-exit-btn {
+  display: none;
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  background: rgba(0, 0, 0, 0.75);
+  border: 1px solid #555;
+  color: #fff;
+  border-radius: 20px;
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  z-index: 2000;
+  align-items: center;
+  gap: 6px;
+  backdrop-filter: blur(8px);
+}
+#read-mode-exit-btn:hover {
+  background: var(--acrobat-blue);
+}
+
+/* =====================================================================
+   13. PHASE 3: ORGANIZE PAGES, SECURITY, COMPRESSION, & OCR
+   ===================================================================== */
+
+/* Organize Pages Modal & Grid */
+.organize-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 14px;
+  max-height: 420px;
+  overflow-y: auto;
+  padding: 12px;
+  background: #181818;
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+}
+
+.organize-card {
+  background: #252525;
+  border: 2px solid #3e3e3e;
+  border-radius: 6px;
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  transition: all 0.15s ease;
+}
+
+.organize-card.selected {
+  border-color: var(--acrobat-blue);
+  box-shadow: 0 0 12px rgba(20, 115, 230, 0.6);
+  background: #2d3748;
+}
+
+.organize-card-preview {
+  width: 100%;
+  height: 140px;
+  background: #fff;
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+}
+
+.organize-card-preview canvas {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.organize-card-footer {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 6px;
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+.organize-card-actions {
+  display: flex;
+  gap: 2px;
+}
+
+.organize-action-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  width: 22px;
+  height: 22px;
+  border-radius: 3px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+}
+.organize-action-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+}
+
+/* Compression Option Cards */
+.compression-option-card {
+  background: #222;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 12px 14px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.15s ease;
+}
+
+.compression-option-card:hover {
+  background: #2a2a2a;
+}
+
+.compression-option-card.selected {
+  border-color: var(--acrobat-blue);
+  background: rgba(20, 115, 230, 0.15);
+}
+
+/* Certificate & Digital ID Security Badge */
+.cert-valid-badge {
+  background: rgba(46, 125, 50, 0.2);
+  border: 1px solid #4caf50;
+  color: #a5d6a7;
+  padding: 12px 16px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 13px;
+}
+
+.cert-valid-seal {
+  width: 32px;
+  height: 32px;
+  background: #2e7d32;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: bold;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+/* Security Permissions Grid */
+.perm-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  font-size: 12px;
+  margin-top: 8px;
+}
+
+.perm-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-secondary);
+}
+
+.perm-item input[type="checkbox"] {
+  accent-color: var(--acrobat-blue);
+}
+
+/* OCR & Export Cards */
+.export-format-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.export-format-card {
+  background: #222;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 14px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  transition: all 0.15s ease;
+}
+
+.export-format-card:hover, .export-format-card.selected {
+  border-color: var(--acrobat-blue);
+  background: rgba(20, 115, 230, 0.12);
+}
+
+.export-format-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+/* =====================================================================
+   14. PHASE 4: COMBINE FILES, REDACTION, FORM DESIGNER & COMPARE
+   ===================================================================== */
+
+/* Combine Files Drag & Drop Queue */
+.combine-dropzone {
+  border: 2px dashed var(--border-color);
+  border-radius: 8px;
+  padding: 24px;
+  text-align: center;
+  background: #1e1e1e;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.combine-dropzone:hover, .combine-dropzone.dragover {
+  border-color: var(--acrobat-blue);
+  background: rgba(20, 115, 230, 0.08);
+}
+
+.combine-file-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 260px;
+  overflow-y: auto;
+  margin-top: 14px;
+}
+
+.combine-file-item {
+  background: #252525;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.combine-file-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 13px;
+}
+
+.combine-file-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Redaction Styling */
+.placed-redaction-box {
+  position: absolute;
+  border: 2px dashed #e53935;
+  background: rgba(229, 57, 53, 0.25);
+  cursor: move;
+  z-index: 45;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.placed-redaction-box.applied {
+  border: 2px solid #000;
+  background: #000000 !important;
+  color: #fff;
+  font-family: monospace;
+  cursor: default;
+}
+
+.redaction-tag {
+  background: rgba(0,0,0,0.6);
+  padding: 2px 6px;
+  border-radius: 2px;
+  pointer-events: none;
+}
+
+/* Form Designer Widget */
+.designer-form-field {
+  position: absolute;
+  border: 1px dashed var(--acrobat-blue);
+  background: rgba(20, 115, 230, 0.1);
+  cursor: move;
+  z-index: 45;
+  display: flex;
+  align-items: center;
+  padding: 4px 8px;
+  box-sizing: border-box;
+}
+
+.designer-form-field:hover {
+  border: 1px solid var(--acrobat-blue);
+  background: rgba(20, 115, 230, 0.2);
+}
+
+.designer-field-label {
+  font-size: 11px;
+  color: #1473e6;
+  font-weight: 600;
+  user-select: none;
+}
+
+/* Compare Files Split-Screen Viewer */
+.compare-container {
+  display: flex;
+  width: 100%;
+  height: 520px;
+  gap: 12px;
+  overflow: hidden;
+}
+
+.compare-pane {
+  flex: 1;
+  background: #181818;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.compare-pane-header {
+  padding: 8px 12px;
+  background: #222;
+  border-bottom: 1px solid var(--border-color);
+  font-size: 12px;
+  font-weight: 600;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.compare-pane-viewport {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  background: #333;
+}
+
+.diff-badge {
+  background: #e65100;
+  color: #fff;
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-weight: bold;
+}
+
+/* Phase 5: Watermark, Bates Numbering & Preflight */
+.watermark-preview-box {
+  width: 100%;
+  height: 140px;
+  background: #ffffff;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  margin-top: 10px;
+  color: #111;
+}
+
+.watermark-preview-text {
+  font-family: sans-serif;
+  font-weight: 700;
+  text-transform: uppercase;
+  user-select: none;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.bates-preview-box {
+  background: #181818;
+  border: 1px dashed var(--acrobat-blue);
+  padding: 12px;
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 13px;
+  color: #64b5f6;
+  text-align: center;
+  margin-top: 10px;
+}
+
+.preflight-report-box {
+  background: #1e1e1e;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  padding: 12px;
+  max-height: 280px;
+  overflow-y: auto;
+  font-size: 12px;
+}
+
+.preflight-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.preflight-item:last-child {
+  border-bottom: none;
+}
+
+.preflight-status-icon {
+  font-size: 12px;
+  line-height: 1.2;
+}
+
+.preflight-status-icon.success {
+  color: #4caf50;
+}
+
+.preflight-status-icon.warning {
+  color: #ff9800;
+}
+
+.preflight-status-icon.info {
+  color: #2196f3;
+}
+
+/* Phase 6: Accessibility Speech HUD, Sanitization & Action Wizard */
+#speech-hud-bar {
+  display: none;
+  position: fixed;
+  bottom: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #222;
+  border: 1px solid var(--acrobat-blue);
+  border-radius: 24px;
+  padding: 6px 16px;
+  align-items: center;
+  gap: 12px;
+  z-index: 99;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.7);
+  color: #fff;
+  font-size: 12px;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.action-wizard-step {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  background: #181818;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  margin-bottom: 8px;
+}
+
+.action-wizard-step.active {
+  border-color: var(--acrobat-blue);
+  background: rgba(20, 115, 230, 0.1);
+}
+
+.action-wizard-step.completed {
+  border-color: #4caf50;
+  background: rgba(76, 175, 80, 0.1);
+}
+
+.bookmark-action-btn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 11px;
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 2px;
+}
+
+.bookmark-action-btn:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* Phase 7: Print Production & Imposition Studio */
+.imposition-sheet-card {
+  background: #ffffff;
+  color: #111;
+  border: 1px solid #444;
+  border-radius: 4px;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  flex-shrink: 0;
+}
+
+.imposition-sheet-body {
+  display: grid;
+  gap: 4px;
+  background: #f0f0f0;
+  padding: 6px;
+  border: 1px dashed #aaa;
+  border-radius: 2px;
+  margin-top: 6px;
+}
+
+.imposition-page-cell {
+  background: #fff;
+  border: 1px solid #ccc;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 12px;
+  font-family: monospace;
+  font-size: 11px;
+  font-weight: 700;
+  color: #1473e6;
+  border-radius: 2px;
+  min-width: 50px;
+  min-height: 40px;
+}
+
+/* Phase 8: Keyboard Shortcuts Modal & Touch / Stylus Styling */
+.shortcuts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+  max-height: 480px;
+  overflow-y: auto;
+  padding: 4px;
+}
+
+.shortcuts-group {
+  background: #181818;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 12px;
+}
+
+.shortcuts-group h4 {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--acrobat-blue);
+  margin-bottom: 8px;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 4px;
+}
+
+.shortcut-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px 0;
+  font-size: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.shortcut-row:last-child {
+  border-bottom: none;
+}
+
+.kbd-badge {
+  background: #2b2b2b;
+  border: 1px solid #444;
+  border-radius: 4px;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.5);
+  padding: 2px 6px;
+  font-family: monospace;
+  font-size: 11px;
+  color: #fff;
+  font-weight: 600;
+}
+
+/* Phase 9: Enterprise PKI Certificates, Attachments & Measurement Studio */
+.cert-studio-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--border-color);
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.cert-tab-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  padding: 8px 14px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.15s ease;
+}
+
+.cert-tab-btn:hover {
+  color: #fff;
+}
+
+.cert-tab-btn.active {
+  color: var(--acrobat-blue);
+  border-bottom-color: var(--acrobat-blue);
+}
+
+.cert-id-card {
+  background: #1a1a1a;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 10px 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  transition: border-color 0.15s;
+}
+
+.cert-id-card:hover {
+  border-color: #555;
+}
+
+.cert-id-card.selected {
+  border-color: var(--acrobat-blue);
+  background: rgba(20, 115, 230, 0.08);
+}
+
+.attachment-item-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #1e1e1e;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  padding: 8px 10px;
+  margin-bottom: 6px;
+  font-size: 11px;
+}
+
+.attachment-item-card:hover {
+  background: #252525;
+}
+
+#measure-hud-bar {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(24, 24, 24, 0.95);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 8px 16px;
+  display: none;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+  z-index: 1000;
+  font-size: 12px;
+  color: #eee;
+}
+
+.digital-sig-block {
+  position: absolute;
+  border: 1.5px solid #27ae60;
+  background: rgba(255, 255, 255, 0.96);
+  color: #111;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  cursor: pointer;
+  z-index: 25;
+}
+
+.digital-sig-badge {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #e8f8f0;
+  color: #27ae60;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  font-size: 18px;
+  flex-shrink: 0;
+  border: 1px solid #27ae60;
+}
+
+

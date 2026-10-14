@@ -1,0 +1,2052 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Adobe Acrobat Reader</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/svg+xml" href="icon.svg">
+  <meta name="theme-color" content="#1e1e1e">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Noto+Sans+Bengali:wght@300;400;500;600;700&family=Noto+Serif+Bengali:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- =====================================================================
+       1. TITLE BAR & SYSTEM HEADER
+       ===================================================================== -->
+  <header id="app-titlebar">
+    <div class="titlebar-left">
+      <div class="acrobat-logo" title="Adobe Acrobat Reader">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 20L12 4l8 16M6 16h12" />
+        </svg>
+      </div>
+      <div class="doc-name-badge">
+        <span id="doc-title-text">sample.pdf</span>
+        <span class="doc-status-pill" id="doc-status-indicator">Saved</span>
+      </div>
+    </div>
+
+    <div class="titlebar-center">
+      <div class="global-search-box">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input type="text" id="global-search-input" placeholder="Search tools and text (Ctrl+F)..." autocomplete="off">
+        <span id="search-counter" style="font-size: 11px; color: var(--text-muted); display: none;">0/0</span>
+      </div>
+    </div>
+
+    <div class="titlebar-right">
+      <button class="btn-pill-primary" id="btn-share-doc" title="Share with others">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="18" cy="5" r="3"></circle>
+          <circle cx="6" cy="12" r="3"></circle>
+          <circle cx="18" cy="19" r="3"></circle>
+          <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+          <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+        </svg>
+        <span>Share</span>
+      </button>
+      <div class="user-avatar" title="Signed in as Acrobat User">AR</div>
+    </div>
+  </header>
+
+  <!-- =====================================================================
+       2. GLOBAL MENU BAR (File, Edit, View, Sign...)
+       ===================================================================== -->
+  <nav id="app-menubar">
+    <!-- File Menu -->
+    <div class="menu-item" data-menu="file">
+      <span>File</span>
+      <div class="dropdown-panel">
+        <div class="dropdown-item" id="menu-open">
+          <span>Open...</span>
+          <span class="dropdown-shortcut">Ctrl+O</span>
+        </div>
+        <div class="dropdown-item" id="menu-save">
+          <span>Save As...</span>
+          <span class="dropdown-shortcut">Ctrl+S</span>
+        </div>
+        <div class="dropdown-item" id="menu-print">
+          <span>Print...</span>
+          <span class="dropdown-shortcut">Ctrl+P</span>
+        </div>
+        <div class="dropdown-item" id="menu-export-pdf">
+          <span>Export Annotated PDF...</span>
+          <span class="dropdown-shortcut">Ctrl+E</span>
+        </div>
+        <div class="dropdown-item" id="menu-combine-files">
+          <span>Combine Files into Single PDF...</span>
+        </div>
+        <div class="dropdown-item" id="menu-compare-files">
+          <span>Compare Two PDF Files...</span>
+        </div>
+        <div class="dropdown-divider"></div>
+        <div class="dropdown-item" id="menu-properties">
+          <span>Document Properties...</span>
+          <span class="dropdown-shortcut">Ctrl+D</span>
+        </div>
+        <div class="dropdown-divider"></div>
+        <div class="dropdown-item" id="menu-close">
+          <span>Close</span>
+          <span class="dropdown-shortcut">Ctrl+W</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Edit Menu -->
+    <div class="menu-item" data-menu="edit">
+      <span>Edit</span>
+      <div class="dropdown-panel">
+        <div class="dropdown-item" id="menu-undo">
+          <span>Undo</span>
+          <span class="dropdown-shortcut">Ctrl+Z</span>
+        </div>
+        <div class="dropdown-item" id="menu-redo">
+          <span>Redo</span>
+          <span class="dropdown-shortcut">Ctrl+Y</span>
+        </div>
+        <div class="dropdown-divider"></div>
+        <div class="dropdown-item" id="menu-copy">
+          <span>Copy</span>
+          <span class="dropdown-shortcut">Ctrl+C</span>
+        </div>
+        <div class="dropdown-item" id="menu-select-all">
+          <span>Select All</span>
+          <span class="dropdown-shortcut">Ctrl+A</span>
+        </div>
+        <div class="dropdown-divider"></div>
+        <div class="dropdown-item" id="menu-find">
+          <span>Find in Document</span>
+          <span class="dropdown-shortcut">Ctrl+F</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- View Menu -->
+    <div class="menu-item" data-menu="view">
+      <span>View</span>
+      <div class="dropdown-panel">
+        <div class="dropdown-item" id="menu-zoom-in">
+          <span>Zoom In</span>
+          <span class="dropdown-shortcut">Ctrl++</span>
+        </div>
+        <div class="dropdown-item" id="menu-zoom-out">
+          <span>Zoom Out</span>
+          <span class="dropdown-shortcut">Ctrl+-</span>
+        </div>
+        <div class="dropdown-item" id="menu-actual-size">
+          <span>Actual Size (100%)</span>
+          <span class="dropdown-shortcut">Ctrl+0</span>
+        </div>
+        <div class="dropdown-item" id="menu-fit-width">
+          <span>Fit Width</span>
+          <span class="dropdown-shortcut">Ctrl+2</span>
+        </div>
+        <div class="dropdown-item" id="menu-fit-page">
+          <span>Fit Page</span>
+          <span class="dropdown-shortcut">Ctrl+1</span>
+        </div>
+        <div class="dropdown-divider"></div>
+        <div class="dropdown-item" id="menu-rotate-cw">
+          <span>Rotate Clockwise</span>
+          <span class="dropdown-shortcut">Shift+Ctrl++</span>
+        </div>
+        <div class="dropdown-item" id="menu-fullscreen">
+          <span>Full Screen Mode</span>
+          <span class="dropdown-shortcut">F11</span>
+        </div>
+        <div class="dropdown-divider"></div>
+        <div class="dropdown-item" id="menu-read-aloud">
+          <span>Read Out Loud (Text-to-Speech)</span>
+          <span class="dropdown-shortcut">Ctrl+Shift+Y</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- E-Sign Menu -->
+    <div class="menu-item" data-menu="sign">
+      <span>E-Sign</span>
+      <div class="dropdown-panel">
+        <div class="dropdown-item" id="menu-add-signature">
+          <span>Add Signature...</span>
+        </div>
+        <div class="dropdown-item" id="menu-fill-sign">
+          <span>Fill & Sign Form Fields</span>
+        </div>
+        <div class="dropdown-divider"></div>
+        <div class="dropdown-item" id="menu-clear-signatures">
+          <span>Clear All Signatures</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tools Menu (Phase 5 & 6) -->
+    <div class="menu-item" data-menu="tools">
+      <span>Tools</span>
+      <div class="dropdown-panel">
+        <div class="dropdown-item" id="menu-watermark">
+          <span>Add Watermark...</span>
+        </div>
+        <div class="dropdown-item" id="menu-bates">
+          <span>Bates Numbering (Legal)...</span>
+        </div>
+        <div class="dropdown-item" id="menu-preflight">
+          <span>Preflight & Standards Audit...</span>
+        </div>
+        <div class="dropdown-divider"></div>
+        <div class="dropdown-item" id="menu-sanitize">
+          <span>Sanitize & Flatten Document...</span>
+        </div>
+        <div class="dropdown-item" id="menu-action-wizard">
+          <span>Action Wizard (Batch Automation)...</span>
+        </div>
+        <div class="dropdown-divider"></div>
+        <div class="dropdown-item" id="menu-print-production">
+          <span>Print Production & Output Preview...</span>
+        </div>
+        <div class="dropdown-item" id="menu-imposition">
+          <span>Booklet & N-Up Imposition Studio...</span>
+        </div>
+        <div class="dropdown-divider"></div>
+        <div class="dropdown-item" id="menu-certificates">
+          <span>Certificates & Digital ID Studio...</span>
+        </div>
+        <div class="dropdown-item" id="menu-attachments-manager">
+          <span>Attachments & Portfolio Manager...</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Help Menu -->
+    <div class="menu-item" data-menu="help">
+      <span>Help</span>
+      <div class="dropdown-panel">
+        <div class="dropdown-item" id="menu-about">
+          <span>About Adobe Acrobat Reader Clone</span>
+        </div>
+        <div class="dropdown-item" id="menu-shortcuts">
+          <span>Keyboard Shortcuts</span>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- =====================================================================
+       3. QUICK TOOLS RIBBON
+       ===================================================================== -->
+  <section id="app-toolbar">
+    <div class="toolbar-group">
+      <!-- File Picker Input (Hidden) -->
+      <input type="file" id="file-input" accept="application/pdf" style="display: none;">
+
+      <button class="tool-btn" id="btn-open" title="Open PDF file (Ctrl+O)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+        </svg>
+      </button>
+
+      <button class="tool-btn" id="btn-save" title="Save PDF (Ctrl+S)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+          <polyline points="17 21 17 13 7 13 7 21"></polyline>
+          <polyline points="7 3 7 8 15 8"></polyline>
+        </svg>
+      </button>
+
+      <button class="tool-btn" id="btn-print" title="Print document (Ctrl+P)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="6 9 6 2 18 2 18 9"></polyline>
+          <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+          <rect x="6" y="14" width="12" height="8"></rect>
+        </svg>
+      </button>
+
+      <div class="tool-separator"></div>
+
+      <!-- Select / Hand Mode -->
+      <button class="tool-btn active" id="btn-tool-select" title="Selection Tool (V)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 3l7.07 16.97 2.51-7.39 7.39-2.51L3 3z"></path>
+          <path d="M13 13l6 6"></path>
+        </svg>
+      </button>
+
+      <button class="tool-btn" id="btn-tool-hand" title="Hand / Pan Tool (H)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"></path>
+          <path d="M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v2"></path>
+          <path d="M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v8"></path>
+          <path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"></path>
+        </svg>
+      </button>
+
+      <div class="tool-separator"></div>
+
+      <!-- Zoom Group -->
+      <button class="tool-btn" id="btn-zoom-out" title="Zoom Out (Ctrl+-)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          <line x1="8" y1="11" x2="14" y2="11"></line>
+        </svg>
+      </button>
+
+      <div class="zoom-selector-box">
+        <select id="select-zoom">
+          <option value="0.5">50%</option>
+          <option value="0.75">75%</option>
+          <option value="1.0" selected>100%</option>
+          <option value="1.25">125%</option>
+          <option value="1.5">150%</option>
+          <option value="2.0">200%</option>
+          <option value="fit-width">Fit Width</option>
+          <option value="fit-page">Fit Page</option>
+        </select>
+      </div>
+
+      <button class="tool-btn" id="btn-zoom-in" title="Zoom In (Ctrl++)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          <line x1="11" y1="8" x2="11" y2="14"></line>
+          <line x1="8" y1="11" x2="14" y2="11"></line>
+        </svg>
+      </button>
+
+      <button class="tool-btn" id="btn-fit-width" title="Fit to Width (Ctrl+2)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 3 21 3 21 9"></polyline>
+          <polyline points="9 21 3 21 3 15"></polyline>
+          <line x1="21" y1="3" x2="14" y2="10"></line>
+          <line x1="3" y1="21" x2="10" y2="14"></line>
+        </svg>
+      </button>
+
+      <button class="tool-btn" id="btn-fit-page" title="Fit Entire Page (Ctrl+1)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="5" y="3" width="14" height="18" rx="2"></rect>
+          <line x1="9" y1="7" x2="15" y2="7"></line>
+          <line x1="9" y1="11" x2="15" y2="11"></line>
+        </svg>
+      </button>
+
+      <button class="tool-btn" id="btn-rotate" title="Rotate Clockwise">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="23 4 23 10 17 10"></polyline>
+          <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Center Mode Switcher Tabs -->
+    <div class="mode-tab-group">
+      <button class="mode-tab-btn active" id="tab-mode-view">Read & View</button>
+      <button class="mode-tab-btn" id="tab-mode-comment">Comment & Markup</button>
+      <button class="mode-tab-btn" id="tab-mode-sign">Fill & Sign</button>
+      <button class="mode-tab-btn" id="tab-mode-form">Prepare Form</button>
+    </div>
+
+    <!-- Right Controls -->
+    <div class="toolbar-group">
+      <button class="tool-btn" id="btn-two-page" title="Two-Page Spread View">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="3" width="9" height="18" rx="1"></rect>
+          <rect x="13" y="3" width="9" height="18" rx="1"></rect>
+        </svg>
+      </button>
+
+      <button class="tool-btn" id="btn-read-mode" title="Read / Presentation Mode (Distraction-Free)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+          <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+        </svg>
+      </button>
+
+      <button class="tool-btn" id="btn-fullscreen" title="Full Screen (F11)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
+        </svg>
+      </button>
+
+      <button class="tool-btn" id="btn-toggle-tools-pane" title="Toggle All Tools Sidebar">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+          <line x1="15" y1="3" x2="15" y2="21"></line>
+        </svg>
+      </button>
+    </div>
+  </section>
+
+  <!-- =====================================================================
+       4. CONTEXTUAL SECONDARY TOOLBAR (Comment Mode)
+       ===================================================================== -->
+  <section id="contextual-toolbar" style="display: none;">
+    <span class="contextual-label">Annotation Tools</span>
+
+    <button class="tool-btn active" id="annot-tool-highlight" title="Highlight Text (H)">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="m9 11-6 6v3h3l6-6"></path>
+        <path d="m22 12-4.6 4.6a2 2 0 0 1-2.8 0l-5.2-5.2a2 2 0 0 1 0-2.8L14 4"></path>
+      </svg>
+    </button>
+
+    <button class="tool-btn" id="annot-tool-underline" title="Underline Text (U)">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M6 3v7a6 6 0 0 0 6 6 6 6 0 0 0 6-6V3"></path>
+        <line x1="4" y1="21" x2="20" y2="21"></line>
+      </svg>
+    </button>
+
+    <button class="tool-btn" id="annot-tool-strikethrough" title="Strikethrough (S)">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M16 4H9a3 3 0 0 0-2.83 4"></path>
+        <path d="M14 12a4 4 0 0 1 0 8H6"></path>
+        <line x1="4" y1="12" x2="20" y2="12"></line>
+      </svg>
+    </button>
+
+    <button class="tool-btn" id="annot-tool-note" title="Add Sticky Note (N)">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+      </svg>
+    </button>
+
+    <button class="tool-btn" id="annot-tool-pen" title="Freehand Draw (D)">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
+      </svg>
+    </button>
+
+    <button class="tool-btn" id="annot-tool-eraser" title="Eraser">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21"></path>
+        <path d="M22 21H7"></path>
+        <path d="m5 11 9 9"></path>
+      </svg>
+    </button>
+
+    <div class="tool-separator"></div>
+
+    <!-- Vector Shape Tools -->
+    <button class="tool-btn" id="annot-tool-rect" title="Rectangle Shape">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"></rect></svg>
+    </button>
+
+    <button class="tool-btn" id="annot-tool-circle" title="Oval / Circle Shape">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"></circle></svg>
+    </button>
+
+    <button class="tool-btn" id="annot-tool-arrow" title="Pointer Arrow">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="19" x2="19" y2="5"></line><polyline points="10 5 19 5 19 14"></polyline></svg>
+    </button>
+
+    <button class="tool-btn" id="annot-tool-measure" title="Measuring Tool (Distance & Scale)">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12h20M6 8v8M18 8v8M12 9v6"></path></svg>
+    </button>
+
+    <button class="tool-btn" id="annot-tool-redact" title="Mark Area for Redaction">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="3" y1="15" x2="21" y2="15"></line></svg>
+    </button>
+
+    <div class="tool-separator"></div>
+
+    <!-- Color Dots -->
+    <div class="color-dot-picker selected" data-color="#ffeb3b" style="background: #ffeb3b;" title="Yellow"></div>
+    <div class="color-dot-picker" data-color="#4caf50" style="background: #4caf50;" title="Green"></div>
+    <div class="color-dot-picker" data-color="#2196f3" style="background: #2196f3;" title="Blue"></div>
+    <div class="color-dot-picker" data-color="#f44336" style="background: #f44336;" title="Red"></div>
+    <div class="color-dot-picker" data-color="#9c27b0" style="background: #9c27b0;" title="Purple"></div>
+
+    <div class="tool-separator"></div>
+
+    <button class="modal-btn modal-btn-secondary" id="btn-clear-page-annot" style="font-size: 11px; padding: 4px 8px;">
+      Clear Annotations
+    </button>
+
+    <button class="modal-btn modal-btn-danger" id="btn-apply-redactions" style="font-size: 11px; padding: 4px 8px;" title="Permanently black out marked redaction boxes">
+      Apply Redactions
+    </button>
+  </section>
+
+  <!-- =====================================================================
+       4B. CONTEXTUAL FILL & SIGN TOOLBAR (Phase 2 AcroForms)
+       ===================================================================== -->
+  <section id="fillsign-toolbar" style="display: none;">
+    <span class="contextual-label">Fill & Sign</span>
+
+    <button class="fillsign-btn active" id="fillsign-tool-text" title="Type Text">
+      <span style="font-weight: 700; font-size: 14px;">Ab</span> <span>Type Text</span>
+    </button>
+
+    <button class="fillsign-btn" id="fillsign-tool-check" title="Checkmark Stamp">
+      <span style="font-size: 14px; color: #27ae60; font-weight: bold;">✓</span> <span>Check</span>
+    </button>
+
+    <button class="fillsign-btn" id="fillsign-tool-cross" title="Crossmark Stamp">
+      <span style="font-size: 14px; color: #e74c3c; font-weight: bold;">✗</span> <span>Cross</span>
+    </button>
+
+    <button class="fillsign-btn" id="fillsign-tool-dot" title="Dot / Bullet Stamp">
+      <span style="font-size: 14px; color: #3498db; font-weight: bold;">●</span> <span>Dot</span>
+    </button>
+
+    <button class="fillsign-btn" id="fillsign-tool-line" title="Strike Line">
+      <span style="font-size: 14px; font-weight: bold;">—</span> <span>Line</span>
+    </button>
+
+    <button class="fillsign-btn" id="fillsign-tool-circle" title="Circle Text">
+      <span style="font-size: 14px; font-weight: bold;">◯</span> <span>Circle</span>
+    </button>
+
+    <div class="tool-separator"></div>
+
+    <button class="fillsign-btn" id="fillsign-tool-signature" title="Place Stored Signature">
+      <span>✍ Place Signature</span>
+    </button>
+  </section>
+
+  <!-- =====================================================================
+       4C. CONTEXTUAL FORM DESIGNER TOOLBAR (Phase 4 Interactive Forms)
+       ===================================================================== -->
+  <section id="prepare-form-toolbar" style="display: none; height: 40px; background: #262626; border-bottom: 1px solid var(--border-color); align-items: center; padding: 0 16px; gap: 8px; font-size: 12px; z-index: 75;">
+    <span class="contextual-label">Form Designer</span>
+
+    <button class="fillsign-btn active" id="form-tool-text" title="Interactive Text Box Field">
+      <span>📝 Text Field</span>
+    </button>
+
+    <button class="fillsign-btn" id="form-tool-checkbox" title="Interactive Checkbox Field">
+      <span>☑ Check Box</span>
+    </button>
+
+    <button class="fillsign-btn" id="form-tool-radio" title="Radio Button Group">
+      <span>🔘 Radio Button</span>
+    </button>
+
+    <button class="fillsign-btn" id="form-tool-dropdown" title="Dropdown Choice List">
+      <span>▼ Dropdown</span>
+    </button>
+
+    <button class="fillsign-btn" id="form-tool-signature" title="Digital Signature Field">
+      <span>✍ Signature Field</span>
+    </button>
+
+    <div class="tool-separator"></div>
+
+    <button class="modal-btn modal-btn-primary" id="btn-save-form-fields" style="font-size: 11px; padding: 4px 10px;">
+      Save Form Fields into PDF
+    </button>
+  </section>
+
+  <!-- =====================================================================
+       5. WORKSPACE CONTAINER (Left Rail/Drawer, Canvas Viewport, Right Sidebar)
+       ===================================================================== -->
+  <main id="app-workspace">
+    <!-- Left Navigation Icon Rail & Collapsible Drawer -->
+    <div id="left-nav-container">
+      <div class="left-icon-rail">
+        <button class="rail-btn active" id="rail-btn-thumbs" title="Page Thumbnails">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="7" height="7"></rect>
+            <rect x="14" y="3" width="7" height="7"></rect>
+            <rect x="14" y="14" width="7" height="7"></rect>
+            <rect x="3" y="14" width="7" height="7"></rect>
+          </svg>
+        </button>
+
+        <button class="rail-btn" id="rail-btn-bookmarks" title="Bookmarks / Outline">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+          </svg>
+        </button>
+
+        <button class="rail-btn" id="rail-btn-comments" title="Comments & Markups">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+          </svg>
+        </button>
+
+        <button class="rail-btn" id="rail-btn-attachments" title="Attachments">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path>
+          </svg>
+        </button>
+      </div>
+
+      <aside class="left-drawer-panel" id="left-drawer-panel">
+        <div class="drawer-header">
+          <span id="drawer-title-text">Page Thumbnails</span>
+          <button class="modal-close-btn" id="btn-close-drawer" title="Close Panel">✕</button>
+        </div>
+
+        <div class="drawer-content">
+          <!-- Pane 1: Thumbnails -->
+          <div id="drawer-pane-thumbs" class="drawer-pane">
+            <div id="thumbnails-list"></div>
+          </div>
+
+          <!-- Pane 2: Bookmarks -->
+          <div id="drawer-pane-bookmarks" class="drawer-pane" style="display: none; padding: 10px;">
+            <button id="btn-add-bookmark" class="modal-btn modal-btn-secondary" style="width: 100%; margin-bottom: 12px; font-size: 11px; padding: 6px 10px;">
+              <span>🔖</span> + Add Bookmark at Page <span id="current-page-bookmark-label">1</span>
+            </button>
+            <div id="bookmarks-list">
+              <div class="bookmark-node" data-page="1">
+                <span>📄</span> <span>1. Executive Summary & Overview</span>
+              </div>
+              <div class="bookmark-node" data-page="2">
+                <span>📄</span> <span>2. System Architecture & Rendering</span>
+              </div>
+              <div class="bookmark-node" data-page="3">
+                <span>📄</span> <span>3. Security, Signatures & Conclusion</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pane 3: Comments -->
+          <div id="drawer-pane-comments" class="drawer-pane" style="display: none;">
+            <div id="comments-list-container">
+              <p style="font-size: 11px; color: var(--text-muted); text-align: center; padding: 20px 0;">No comments added yet. Switch to Comment Mode to add sticky notes and highlights.</p>
+            </div>
+          </div>
+
+          <!-- Pane 4: Attachments -->
+          <div id="drawer-pane-attachments" class="drawer-pane" style="display: none; padding: 8px;">
+            <div style="display: flex; gap: 6px; margin-bottom: 10px;">
+              <input type="file" id="attachment-file-input" style="display: none;" multiple>
+              <button class="modal-btn modal-btn-secondary" id="btn-add-attachment" style="padding: 4px 8px; font-size: 11px; flex: 1;">+ Add File</button>
+              <button class="modal-btn modal-btn-primary" id="btn-save-attachments" style="padding: 4px 8px; font-size: 11px;">Save into PDF</button>
+            </div>
+            <div id="attachments-list-container" style="display: flex; flex-direction: column; gap: 4px;">
+              <div style="font-size: 11px; color: var(--text-muted); text-align: center; padding: 20px 0;" id="attachments-empty-msg">
+                No embedded attachments.<br>Click "+ Add File" to attach files.
+              </div>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <!-- Central Document Viewport -->
+    <section id="document-viewport">
+      <div id="pages-container">
+        <!-- Rendered PDF Pages will be injected dynamically here -->
+      </div>
+    </section>
+
+    <!-- Right "All Tools" Sidebar -->
+    <aside id="right-tools-sidebar">
+      <div class="right-sidebar-header">
+        <span>All Tools</span>
+        <button class="tool-btn" id="btn-collapse-right-sidebar" title="Collapse">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </button>
+      </div>
+
+      <div class="tools-list">
+        <div class="tool-card-item" id="tool-card-export">
+          <div class="tool-card-icon" style="background: rgba(43, 114, 186, 0.15); color: #2b72ba;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+          </div>
+          <div>
+            <div style="font-weight: 500;">Export PDF</div>
+            <div style="font-size: 11px; color: var(--text-muted);">Convert to Word, Excel, PPT</div>
+          </div>
+        </div>
+
+        <div class="tool-card-item" id="tool-card-edit">
+          <div class="tool-card-icon" style="background: rgba(224, 90, 0, 0.15); color: #e05a00;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+          </div>
+          <div>
+            <div style="font-weight: 500;">Edit PDF</div>
+            <div style="font-size: 11px; color: var(--text-muted);">Edit text, images & fonts</div>
+          </div>
+        </div>
+
+        <div class="tool-card-item" id="tool-card-create">
+          <div class="tool-card-icon" style="background: rgba(234, 27, 35, 0.15); color: #ea1b23;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg>
+          </div>
+          <div>
+            <div style="font-weight: 500;">Create PDF</div>
+            <div style="font-size: 11px; color: var(--text-muted);">From any file or scanner</div>
+          </div>
+        </div>
+
+        <div class="tool-card-item" id="tool-card-combine">
+          <div class="tool-card-icon" style="background: rgba(142, 68, 173, 0.15); color: #8e44ad;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="16" height="16" rx="2"></rect><path d="M6 18h12a2 2 0 0 0 2-2V6"></path></svg>
+          </div>
+          <div>
+            <div style="font-weight: 500;">Combine Files</div>
+            <div style="font-size: 11px; color: var(--text-muted);">Merge multiple PDFs</div>
+          </div>
+        </div>
+
+        <div class="tool-card-item" id="tool-card-fillsign">
+          <div class="tool-card-icon" style="background: rgba(39, 174, 96, 0.15); color: #27ae60;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z"></path><line x1="16" y1="8" x2="2" y2="22"></line><line x1="17.5" y1="15" x2="9" y2="15"></line></svg>
+          </div>
+          <div>
+            <div style="font-weight: 500;">Fill & Sign</div>
+            <div style="font-size: 11px; color: var(--text-muted);">Complete forms & sign</div>
+          </div>
+        </div>
+
+        <div class="tool-card-item" id="tool-card-organize">
+          <div class="tool-card-icon" style="background: rgba(52, 152, 219, 0.15); color: #3498db;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="8" height="8" rx="1"></rect><rect x="13" y="3" width="8" height="8" rx="1"></rect><rect x="3" y="13" width="8" height="8" rx="1"></rect><rect x="13" y="13" width="8" height="8" rx="1"></rect></svg>
+          </div>
+          <div>
+            <div style="font-weight: 500;">Organize Pages</div>
+            <div style="font-size: 11px; color: var(--text-muted);">Delete, rotate, extract</div>
+          </div>
+        </div>
+
+        <div class="tool-card-item" id="tool-card-ocr">
+          <div class="tool-card-icon" style="background: rgba(243, 156, 18, 0.15); color: #f39c12;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7V4h16v3M4 17v3h16v-3M9 12h6"></path></svg>
+          </div>
+          <div>
+            <div style="font-weight: 500;">Scan & OCR</div>
+            <div style="font-size: 11px; color: var(--text-muted);">Recognize text in scans</div>
+          </div>
+        </div>
+
+        <div class="tool-card-item" id="tool-card-protect">
+          <div class="tool-card-icon" style="background: rgba(231, 76, 60, 0.15); color: #e74c3c;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+          </div>
+          <div>
+            <div style="font-weight: 500;">Protect & Redact</div>
+            <div style="font-size: 11px; color: var(--text-muted);">Password & sensitive data</div>
+          </div>
+        </div>
+
+        <div class="tool-card-item" id="tool-card-compress">
+          <div class="tool-card-icon" style="background: rgba(22, 160, 133, 0.15); color: #16a085;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 14 10 14 10 20"></polyline><polyline points="20 10 14 10 14 4"></polyline><line x1="14" y1="10" x2="21" y2="3"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg>
+          </div>
+          <div>
+            <div style="font-weight: 500;">Compress PDF</div>
+            <div style="font-size: 11px; color: var(--text-muted);">Reduce file size</div>
+          </div>
+        </div>
+
+        <div class="tool-card-item" id="tool-card-watermark">
+          <div class="tool-card-icon" style="background: rgba(52, 152, 219, 0.15); color: #3498db;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path></svg>
+          </div>
+          <div>
+            <div style="font-weight: 500;">Watermark</div>
+            <div style="font-size: 11px; color: var(--text-muted);">Text or stamp overlay</div>
+          </div>
+        </div>
+
+        <div class="tool-card-item" id="tool-card-bates">
+          <div class="tool-card-icon" style="background: rgba(142, 68, 173, 0.15); color: #8e44ad;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="9" x2="20" y2="9"></line><line x1="4" y1="15" x2="20" y2="15"></line><line x1="10" y1="3" x2="8" y2="21"></line><line x1="16" y1="3" x2="14" y2="21"></line></svg>
+          </div>
+          <div>
+            <div style="font-weight: 500;">Bates Numbering</div>
+            <div style="font-size: 11px; color: var(--text-muted);">Legal indexing & stamps</div>
+          </div>
+        </div>
+
+        <div class="tool-card-item" id="tool-card-preflight">
+          <div class="tool-card-icon" style="background: rgba(243, 156, 18, 0.15); color: #f39c12;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+          </div>
+          <div>
+            <div style="font-weight: 500;">Preflight</div>
+            <div style="font-size: 11px; color: var(--text-muted);">Print & PDF/X audit</div>
+          </div>
+        </div>
+
+        <div class="tool-card-item" id="tool-card-speech">
+          <div class="tool-card-icon" style="background: rgba(46, 204, 113, 0.15); color: #2ecc71;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+          </div>
+          <div>
+            <div style="font-weight: 500;">Read Out Loud</div>
+            <div style="font-size: 11px; color: var(--text-muted);">Accessibility voice engine</div>
+          </div>
+        </div>
+
+        <div class="tool-card-item" id="tool-card-sanitize">
+          <div class="tool-card-icon" style="background: rgba(231, 76, 60, 0.15); color: #e74c3c;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+          </div>
+          <div>
+            <div style="font-weight: 500;">Sanitize & Flatten</div>
+            <div style="font-size: 11px; color: var(--text-muted);">Strip metadata & lock layers</div>
+          </div>
+        </div>
+
+        <div class="tool-card-item" id="tool-card-action-wizard">
+          <div class="tool-card-icon" style="background: rgba(155, 89, 182, 0.15); color: #9b59b6;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+          </div>
+          <div>
+            <div style="font-weight: 500;">Action Wizard</div>
+            <div style="font-size: 11px; color: var(--text-muted);">Automated batch pipelines</div>
+          </div>
+        </div>
+
+        <div class="tool-card-item" id="tool-card-print-production">
+          <div class="tool-card-icon" style="background: rgba(230, 126, 34, 0.15); color: #e67e22;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="2" x2="12" y2="6"></line><line x1="12" y1="18" x2="12" y2="22"></line><line x1="2" y1="12" x2="6" y2="12"></line><line x1="18" y1="12" x2="22" y2="12"></line></svg>
+          </div>
+          <div>
+            <div style="font-weight: 500;">Print Production</div>
+            <div style="font-size: 11px; color: var(--text-muted);">CMYK plates & ink coverage</div>
+          </div>
+        </div>
+
+        <div class="tool-card-item" id="tool-card-imposition">
+          <div class="tool-card-icon" style="background: rgba(26, 188, 156, 0.15); color: #1abc9c;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="12" y1="3" x2="12" y2="21"></line></svg>
+          </div>
+          <div>
+            <div style="font-weight: 500;">Booklet & N-Up</div>
+            <div style="font-size: 11px; color: var(--text-muted);">Saddle stitch & imposition</div>
+          </div>
+        </div>
+
+        <div class="tool-card-item" id="tool-card-certificates">
+          <div class="tool-card-icon" style="background: rgba(46, 204, 113, 0.15); color: #2ecc71;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><path d="m9 12 2 2 4-4"></path></svg>
+          </div>
+          <div>
+            <div style="font-weight: 500;">Certificates & PKI</div>
+            <div style="font-size: 11px; color: var(--text-muted);">Digital IDs & cryptographic sign</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Floating Quick Action Bar (On text selection) -->
+    <div id="floating-selection-menu">
+      <button class="sel-action-btn" id="sel-btn-highlight" title="Highlight">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 11-6 6v3h3l6-6"></path><path d="m22 12-4.6 4.6a2 2 0 0 1-2.8 0l-5.2-5.2a2 2 0 0 1 0-2.8L14 4"></path></svg>
+      </button>
+      <button class="sel-action-btn" id="sel-btn-copy" title="Copy text">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+      </button>
+      <button class="sel-action-btn" id="sel-btn-note" title="Add Note">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+      </button>
+    </div>
+
+    <!-- Floating Navigation HUD -->
+    <nav id="floating-nav-hud">
+      <button class="hud-btn" id="hud-prev-page" title="Previous Page (Left Arrow)">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+      </button>
+
+      <div class="page-indicator-badge">
+        <input type="number" id="hud-page-input" class="page-input-field" value="1" min="1" max="3">
+        <span>/ <span id="hud-total-pages">3</span></span>
+      </div>
+
+      <button class="hud-btn" id="hud-next-page" title="Next Page (Right Arrow)">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+      </button>
+
+      <div class="tool-separator" style="height: 16px;"></div>
+
+      <button class="hud-btn" id="hud-zoom-out" title="Zoom Out">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+      </button>
+
+      <span id="hud-zoom-level" style="font-size: 11px; font-weight: 600; min-width: 38px; text-align: center;">100%</span>
+
+      <button class="hud-btn" id="hud-zoom-in" title="Zoom In">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+      </button>
+
+      <div class="tool-separator" style="height: 16px;"></div>
+
+      <button class="hud-btn" id="hud-fit-page" title="Fit Page">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="3" width="14" height="18" rx="2"></rect></svg>
+      </button>
+
+      <button class="hud-btn" id="hud-rotate" title="Rotate Clockwise">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+      </button>
+    </nav>
+  </main>
+
+  <!-- =====================================================================
+       6. MODAL DIALOGS
+       ===================================================================== -->
+  <!-- Signature Modal -->
+  <div class="modal-overlay" id="modal-signature">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <span>Add Digital Signature</span>
+        <button class="modal-close-btn" id="btn-close-sig-modal">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="tab-nav-bar">
+          <button class="tab-nav-btn active" id="tab-sig-draw">Draw Signature</button>
+          <button class="tab-nav-btn" id="tab-sig-type">Type Name</button>
+        </div>
+
+        <div id="sig-pad-container">
+          <canvas class="signature-canvas-pad" id="signature-canvas" width="440" height="160"></canvas>
+          <div style="display: flex; justify-content: flex-end; margin-top: 6px;">
+            <button class="modal-btn modal-btn-secondary" id="btn-clear-sig-pad" style="font-size: 11px;">Clear Pad</button>
+          </div>
+        </div>
+
+        <div class="signature-type-box" id="sig-type-container">
+          <input type="text" class="signature-text-input" id="sig-type-input" placeholder="Type your full legal name..." value="John Doe">
+          <div class="signature-font-preview" id="sig-font-preview">John Doe</div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="modal-btn modal-btn-secondary" id="btn-cancel-signature">Cancel</button>
+        <button class="modal-btn modal-btn-primary" id="btn-apply-signature">Apply & Place</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Document Properties Modal -->
+  <div class="modal-overlay" id="modal-properties">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <span>Document Properties</span>
+        <button class="modal-close-btn" id="btn-close-prop-modal">✕</button>
+      </div>
+      <div class="modal-body" style="font-size: 12px; line-height: 1.8;">
+        <div><strong>File Name:</strong> <span id="prop-file-name">sample.pdf</span></div>
+        <div><strong>Title:</strong> <span id="prop-title">Adobe Acrobat Architecture Specification</span></div>
+        <div><strong>Author:</strong> <span>Adobe Systems Engineering</span></div>
+        <div><strong>PDF Producer:</strong> <span>Antigravity PDF Core Engine 2.0</span></div>
+        <div><strong>PDF Version:</strong> <span>1.7 (Acrobat 8.x)</span></div>
+        <div><strong>Page Count:</strong> <span id="prop-page-count">3</span></div>
+        <div><strong>Page Size:</strong> <span>612 x 792 pts (Letter)</span></div>
+        <div><strong>Fast Web View:</strong> <span>Yes</span></div>
+      </div>
+      <div class="modal-footer">
+        <button class="modal-btn modal-btn-primary" id="btn-ok-prop-modal">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sticky Note Edit Modal -->
+  <div class="modal-overlay" id="modal-note-editor">
+    <div class="modal-dialog" style="width: 360px;">
+      <div class="modal-header">
+        <span>Sticky Note Comment</span>
+        <button class="modal-close-btn" id="btn-close-note-modal">✕</button>
+      </div>
+      <div class="modal-body">
+        <textarea id="note-modal-textarea" rows="4" style="width: 100%; background: #1e1e1e; border: 1px solid var(--border-color); border-radius: 4px; color: #fff; padding: 8px; font-family: inherit; font-size: 12px; resize: vertical;" placeholder="Type your comment here..."></textarea>
+      </div>
+      <div class="modal-footer">
+        <button class="modal-btn modal-btn-danger" id="btn-delete-note">Delete</button>
+        <button class="modal-btn modal-btn-primary" id="btn-save-note">Save Comment</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phase 3 Modal 1: Organize Pages Modal -->
+  <div class="modal-overlay" id="modal-organize-pages">
+    <div class="modal-dialog" style="width: 720px; max-width: 95vw;">
+      <div class="modal-header">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="color: var(--acrobat-blue); font-weight: bold;">📑</span>
+          <span>Organize Pages — Reorder, Rotate & Delete</span>
+        </div>
+        <button class="modal-close-btn" id="btn-close-org-modal">✕</button>
+      </div>
+      <div class="modal-body">
+        <!-- Organize Action Bar -->
+        <div style="display: flex; gap: 6px; flex-wrap: wrap; padding-bottom: 8px; border-bottom: 1px solid var(--border-color);">
+          <button class="modal-btn modal-btn-secondary" id="btn-org-rotate-left" title="Rotate Selected Counter-Clockwise">⟲ Rotate Left</button>
+          <button class="modal-btn modal-btn-secondary" id="btn-org-rotate-right" title="Rotate Selected Clockwise">⟳ Rotate Right</button>
+          <button class="modal-btn modal-btn-secondary" id="btn-org-duplicate" title="Duplicate Selected Page">⧉ Duplicate</button>
+          <button class="modal-btn modal-btn-secondary" id="btn-org-insert-blank" title="Insert Blank Page">+ Blank Page</button>
+          <button class="modal-btn modal-btn-danger" id="btn-org-delete" title="Delete Selected Page">🗑 Delete</button>
+        </div>
+
+        <!-- Grid of Document Pages -->
+        <div class="organize-grid" id="organize-pages-grid">
+          <!-- Dynamically populated page cards -->
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="modal-btn modal-btn-secondary" id="btn-cancel-organize">Cancel</button>
+        <button class="modal-btn modal-btn-primary" id="btn-apply-organize-pages">Apply Page Changes</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phase 3 Modal 2: Compress PDF Modal -->
+  <div class="modal-overlay" id="modal-compress-pdf">
+    <div class="modal-dialog" style="width: 460px;">
+      <div class="modal-header">
+        <span>Compress PDF — Reduce File Size</span>
+        <button class="modal-close-btn" id="btn-close-compress-modal">✕</button>
+      </div>
+      <div class="modal-body" style="gap: 14px;">
+        <div style="font-size: 12px; color: var(--text-secondary); display: flex; justify-content: space-between;">
+          <span>Current Document Size:</span>
+          <strong id="compress-current-size" style="color: #fff;">1.9 KB</strong>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+          <div class="compression-option-card selected" data-quality="medium">
+            <div>
+              <div style="font-weight: 600; font-size: 13px;">Standard Compression</div>
+              <div style="font-size: 11px; color: var(--text-muted);">Medium file size, crisp text and balanced image quality (150 DPI)</div>
+            </div>
+            <span style="color: #4caf50; font-weight: bold; font-size: 12px;">~45% smaller</span>
+          </div>
+
+          <div class="compression-option-card" data-quality="high">
+            <div>
+              <div style="font-weight: 600; font-size: 13px;">Extreme Compression</div>
+              <div style="font-size: 11px; color: var(--text-muted);">Smallest possible size, suited for email & mobile web (72 DPI)</div>
+            </div>
+            <span style="color: #4caf50; font-weight: bold; font-size: 12px;">~70% smaller</span>
+          </div>
+
+          <div class="compression-option-card" data-quality="low">
+            <div>
+              <div style="font-weight: 600; font-size: 13px;">Minimal Compression</div>
+              <div style="font-size: 11px; color: var(--text-muted);">High resolution graphics, ideal for commercial print (300 DPI)</div>
+            </div>
+            <span style="color: #4caf50; font-weight: bold; font-size: 12px;">~20% smaller</span>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="modal-btn modal-btn-secondary" id="btn-cancel-compress">Cancel</button>
+        <button class="modal-btn modal-btn-primary" id="btn-run-compress">Compress & Download</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phase 3 Modal 3: Protect & Security Modal -->
+  <div class="modal-overlay" id="modal-protect-pdf">
+    <div class="modal-dialog" style="width: 480px;">
+      <div class="modal-header">
+        <span>Protect Document & Password Security</span>
+        <button class="modal-close-btn" id="btn-close-protect-modal">✕</button>
+      </div>
+      <div class="modal-body" style="font-size: 12px; gap: 12px;">
+        <div>
+          <label style="display: block; margin-bottom: 4px; color: var(--text-secondary);">Document Open Password (Required to view PDF):</label>
+          <input type="password" id="input-open-password" class="signature-text-input" style="width: 100%;" placeholder="Enter password (optional)...">
+        </div>
+
+        <div>
+          <label style="display: block; margin-bottom: 4px; color: var(--text-secondary);">Permissions Password (Required to edit & change settings):</label>
+          <input type="password" id="input-perm-password" class="signature-text-input" style="width: 100%;" placeholder="Enter permissions password...">
+        </div>
+
+        <div>
+          <div style="font-weight: 600; margin-bottom: 6px;">Document Restrictions & Permissions:</div>
+          <div class="perm-grid">
+            <label class="perm-item"><input type="checkbox" id="perm-print" checked> Allow High-Res Printing</label>
+            <label class="perm-item"><input type="checkbox" id="perm-copy" checked> Allow Text & Image Copy</label>
+            <label class="perm-item"><input type="checkbox" id="perm-comment" checked> Allow Commenting & Form Fill</label>
+            <label class="perm-item"><input type="checkbox" id="perm-extract"> Allow Page Extraction</label>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="modal-btn modal-btn-secondary" id="btn-cancel-protect">Cancel</button>
+        <button class="modal-btn modal-btn-primary" id="btn-apply-protect">Apply Password Protection</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phase 3 Modal 4: Scan & OCR Text Recognition & Bangla Processing Modal -->
+  <div class="modal-overlay" id="modal-ocr-export">
+    <div class="modal-dialog" style="width: 760px; max-width: 95vw;">
+      <div class="modal-header">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--acrobat-blue)" stroke-width="2"><path d="M4 7V4h3M17 4h3v3M4 17v3h3M20 17v3h-3M9 12h6M12 9v6"/></svg>
+          <span style="font-weight: 600;">Scan & OCR — Text Recognition & Bangla Engine</span>
+        </div>
+        <button class="modal-close-btn" id="btn-close-ocr-modal">✕</button>
+      </div>
+
+      <div class="modal-body" style="font-size: 12px; gap: 14px; max-height: 80vh; overflow-y: auto;">
+        <!-- OCR Options Grid -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; background: rgba(255,255,255,0.03); padding: 12px; border-radius: 6px; border: 1px solid var(--border-color);">
+          <div class="pref-field">
+            <label style="font-weight: 600; color: #eee; margin-bottom: 4px; display: block;">OCR Language / ভাষা:</label>
+            <select id="ocr-language-select" style="width: 100%; background: #1c1c1c; border: 1px solid var(--border-color); color: #fff; border-radius: 4px; padding: 6px 8px; font-size: 12px;">
+              <option value="ben" selected>Bengali / বাংলা (ben)</option>
+              <option value="ben+eng">Bengali + English / বাংলা ও ইংরেজি</option>
+              <option value="eng">English / ইংরেজি (eng)</option>
+            </select>
+          </div>
+
+          <div class="pref-field">
+            <label style="font-weight: 600; color: #eee; margin-bottom: 4px; display: block;">OCR Engine Mode:</label>
+            <select id="ocr-engine-mode" style="width: 100%; background: #1c1c1c; border: 1px solid var(--border-color); color: #fff; border-radius: 4px; padding: 6px 8px; font-size: 12px;">
+              <option value="stream" selected>Digital Stream Extraction (Fast / ডিজিটাল টেক্সট)</option>
+              <option value="visual">Neural Visual OCR (Scanned Image / স্ক্যান করা পাতা)</option>
+            </select>
+          </div>
+
+          <div class="pref-field">
+            <label style="font-weight: 600; color: #eee; margin-bottom: 4px; display: block;">Page Range / পৃষ্ঠা সীমা:</label>
+            <select id="ocr-page-range" style="width: 100%; background: #1c1c1c; border: 1px solid var(--border-color); color: #fff; border-radius: 4px; padding: 6px 8px; font-size: 12px;">
+              <option value="all" selected>All Pages (সব পৃষ্ঠা)</option>
+              <option value="current">Current Page Only (বর্তমান পৃষ্ঠা)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Run OCR Button & Progress -->
+        <div style="display: flex; gap: 10px; align-items: center;">
+          <button class="modal-btn modal-btn-primary" id="btn-run-ocr" style="display: flex; align-items: center; gap: 6px;">
+            <span>🔍 Run Recognition / টেক্সট শনাক্ত করুন</span>
+          </button>
+          <div id="ocr-progress-container" style="flex: 1; display: none; flex-direction: column; gap: 4px;">
+            <div style="display: flex; justify-content: space-between; font-size: 11px;">
+              <span id="ocr-status-text" style="color: var(--text-secondary);">Initializing OCR engine...</span>
+              <span id="ocr-progress-percent" style="color: var(--acrobat-blue); font-weight: 600;">0%</span>
+            </div>
+            <div style="width: 100%; height: 6px; background: #333; border-radius: 3px; overflow: hidden;">
+              <div id="ocr-progress-bar" style="width: 0%; height: 100%; background: var(--acrobat-blue); transition: width 0.2s ease;"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bangla Tools Ribbon -->
+        <div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center; background: rgba(20, 115, 230, 0.08); padding: 8px 12px; border-radius: 4px; border: 1px solid rgba(20, 115, 230, 0.25);">
+          <span style="font-weight: 600; color: #64b5f6; font-size: 11px;">Bangla Font & Encoding Tools:</span>
+          <button type="button" class="tool-btn" id="btn-ocr-bijoy-to-unicode" title="Convert legacy SutonnyMJ/Bijoy ANSI text to standard Unicode Bangla" style="background: #252525; border: 1px solid #444; border-radius: 4px; padding: 4px 8px; font-size: 11px; color: #fff; cursor: pointer;">
+            🔄 Convert Bijoy to Unicode (বিজয় ➔ ইউনিকোড)
+          </button>
+          <button type="button" class="tool-btn" id="btn-ocr-fix-matras" title="Fix broken vowel matras and misplaced conjuncts" style="background: #252525; border: 1px solid #444; border-radius: 4px; padding: 4px 8px; font-size: 11px; color: #fff; cursor: pointer;">
+            ✨ Fix Matras (যুক্তবর্ণ সংশোধন)
+          </button>
+          <div style="margin-left: auto; display: flex; align-items: center; gap: 6px;">
+            <span style="color: var(--text-muted); font-size: 11px;">Font:</span>
+            <select id="ocr-preview-font-select" style="background: #181818; border: 1px solid var(--border-color); color: #fff; border-radius: 4px; padding: 2px 6px; font-size: 11px;">
+              <option value="'Noto Sans Bengali', sans-serif">Noto Sans Bengali</option>
+              <option value="'Noto Serif Bengali', serif">Noto Serif Bengali</option>
+              <option value="'Hind Siliguri', sans-serif">Hind Siliguri</option>
+              <option value="'Kalpurush', sans-serif">Kalpurush</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Preview Area -->
+        <div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <span style="color: var(--text-muted); font-weight: 500;">Extracted / Recognized Text (Editable Unicode Bangla):</span>
+            <span id="ocr-char-count" style="font-size: 11px; color: var(--text-muted);">0 characters</span>
+          </div>
+          <textarea id="ocr-text-preview" rows="11" style="width: 100%; background: #161616; border: 1px solid var(--border-color); border-radius: 4px; color: #f0f0f0; padding: 12px; font-family: 'Noto Sans Bengali', 'Hind Siliguri', 'Kalpurush', sans-serif; font-size: 13px; line-height: 1.6; resize: vertical;" placeholder="Extracted text will appear here. You can edit, clean, or format before copying or inserting into document..."></textarea>
+        </div>
+      </div>
+
+      <div class="modal-footer" style="display: flex; justify-content: space-between;">
+        <button class="modal-btn modal-btn-secondary" id="btn-ocr-insert-doc" style="background: rgba(39, 174, 96, 0.15); border-color: #27ae60; color: #2ecc71;">
+          ✍ Insert into Page (Fill & Sign)
+        </button>
+        <div style="display: flex; gap: 8px;">
+          <button class="modal-btn modal-btn-secondary" id="btn-ocr-copy">Copy to Clipboard</button>
+          <button class="modal-btn modal-btn-primary" id="btn-ocr-download">Download as Text (.txt)</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phase 3 Modal 5: Export to Other Formats Modal -->
+  <div class="modal-overlay" id="modal-export-formats">
+    <div class="modal-dialog" style="width: 520px;">
+      <div class="modal-header">
+        <span>Export PDF to Other Formats</span>
+        <button class="modal-close-btn" id="btn-close-export-modal">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="export-format-grid">
+          <div class="export-format-card selected" data-format="txt">
+            <div class="export-format-icon" style="background: rgba(43, 114, 186, 0.2); color: #2b72ba;">TXT</div>
+            <div style="font-weight: 600; font-size: 13px;">Plain Text (.txt)</div>
+            <div style="font-size: 11px; color: var(--text-muted);">Clean UTF-8 text with formatting</div>
+          </div>
+
+          <div class="export-format-card" data-format="html">
+            <div class="export-format-icon" style="background: rgba(230, 81, 0, 0.2); color: #e65100;">HTML</div>
+            <div style="font-weight: 600; font-size: 13px;">Webpage (.html)</div>
+            <div style="font-size: 11px; color: var(--text-muted);">Responsive HTML5 document</div>
+          </div>
+
+          <div class="export-format-card" data-format="png">
+            <div class="export-format-icon" style="background: rgba(46, 125, 50, 0.2); color: #43a047;">PNG</div>
+            <div style="font-weight: 600; font-size: 13px;">Page Image (.png)</div>
+            <div style="font-size: 11px; color: var(--text-muted);">High-resolution rendered bitmap</div>
+          </div>
+
+          <div class="export-format-card" data-format="docx">
+            <div class="export-format-icon" style="background: rgba(21, 101, 192, 0.2); color: #1e88e5;">DOCX</div>
+            <div style="font-weight: 600; font-size: 13px;">Microsoft Word (.docx)</div>
+            <div style="font-size: 11px; color: var(--text-muted);">Editable Word document</div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="modal-btn modal-btn-secondary" id="btn-cancel-export-fmt">Cancel</button>
+        <button class="modal-btn modal-btn-primary" id="btn-run-export-format">Export Now</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phase 3 Modal 6: Digital Certificate & Signature Verification Modal -->
+  <div class="modal-overlay" id="modal-certificate-details">
+    <div class="modal-dialog" style="width: 500px;">
+      <div class="modal-header">
+        <span>Digital Certificate & Signature Verification</span>
+        <button class="modal-close-btn" id="btn-close-cert-modal">✕</button>
+      </div>
+      <div class="modal-body" style="font-size: 12px; gap: 14px;">
+        <div class="cert-valid-badge">
+          <div class="cert-valid-seal">✓</div>
+          <div>
+            <div style="font-weight: bold; font-size: 13px;">Signature is VALID & Document Unmodified</div>
+            <div style="font-size: 11px; opacity: 0.85;">Certified by Adobe Approved Trust List (AATL)</div>
+          </div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 6px; background: #1e1e1e; padding: 12px; border-radius: 6px; border: 1px solid var(--border-color); line-height: 1.6;">
+          <div><strong>Signer Identity:</strong> <span>John Doe &lt;johndoe@acrobat-trust.com&gt;</span></div>
+          <div><strong>Signing Authority:</strong> <span>Adobe Root Certificate Authority 2026</span></div>
+          <div><strong>Digest Algorithm:</strong> <span>SHA-256 with RSA-2048 Bit Encryption</span></div>
+          <div><strong>Timestamp Service:</strong> <span>RFC 3161 Qualified Timestamp Token</span></div>
+          <div><strong>Validity Period:</strong> <span>Valid through October 14, 2028</span></div>
+          <div><strong>Revocation Status:</strong> <span>OCSP Revocation Check Successful</span></div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="modal-btn modal-btn-primary" id="btn-ok-cert-modal">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phase 4 Modal 1: Combine / Merge Multiple PDFs Modal -->
+  <div class="modal-overlay" id="modal-combine-files">
+    <div class="modal-dialog" style="width: 620px;">
+      <div class="modal-header">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="color: #8e44ad; font-weight: bold;">📚</span>
+          <span>Combine Files into a Single PDF</span>
+        </div>
+        <button class="modal-close-btn" id="btn-close-combine-modal">✕</button>
+      </div>
+      <div class="modal-body">
+        <input type="file" id="combine-file-input" accept="application/pdf" multiple style="display: none;">
+
+        <div class="combine-dropzone" id="combine-dropzone">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--acrobat-blue)" stroke-width="2" style="margin-bottom: 8px;">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="17 8 12 3 7 8"></polyline>
+            <line x1="12" y1="3" x2="12" y2="15"></line>
+          </svg>
+          <div style="font-weight: 600; font-size: 13px;">Drag & Drop PDF files here to combine</div>
+          <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">or click to browse multiple files from your device</div>
+        </div>
+
+        <div class="combine-file-list" id="combine-file-list">
+          <!-- Populated with queued files -->
+          <div style="font-size: 11px; color: var(--text-muted); text-align: center; padding: 12px;">No files selected yet. Add 2 or more PDFs to merge.</div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="modal-btn modal-btn-secondary" id="btn-cancel-combine">Cancel</button>
+        <button class="modal-btn modal-btn-primary" id="btn-run-combine-files">Combine & Open</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phase 4 Modal 2: Compare Two PDF Files Split-Screen Modal -->
+  <div class="modal-overlay" id="modal-compare-files">
+    <div class="modal-dialog" style="width: 960px; max-width: 96vw;">
+      <div class="modal-header">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="color: #e65100; font-weight: bold;">⚖</span>
+          <span>Compare Files — Side-by-Side Synchronized Difference View</span>
+        </div>
+        <button class="modal-close-btn" id="btn-close-compare-modal">✕</button>
+      </div>
+      <div class="modal-body" style="padding: 10px;">
+        <input type="file" id="compare-file-input" accept="application/pdf" style="display: none;">
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+          <span style="font-size: 12px; color: var(--text-secondary);">Synchronized dual-scroll difference detector</span>
+          <button class="modal-btn modal-btn-secondary" id="btn-upload-compare-doc" style="font-size: 11px;">Select Second PDF to Compare...</button>
+        </div>
+
+        <div class="compare-container">
+          <!-- Pane A: Original / Baseline -->
+          <div class="compare-pane" id="compare-pane-a-container">
+            <div class="compare-pane-header">
+              <span id="compare-name-a">Document A (Current)</span>
+              <span class="doc-status-pill">Baseline</span>
+            </div>
+            <div class="compare-pane-viewport" id="compare-viewport-a">
+              <!-- Rendered Pages Document A -->
+            </div>
+          </div>
+
+          <!-- Pane B: New Version / Revision -->
+          <div class="compare-pane" id="compare-pane-b-container">
+            <div class="compare-pane-header">
+              <span id="compare-name-b">Document B (Comparison Target)</span>
+              <span class="diff-badge" id="compare-diff-status">Select File</span>
+            </div>
+            <div class="compare-pane-viewport" id="compare-viewport-b">
+              <!-- Rendered Pages Document B -->
+              <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: var(--text-muted); font-size: 12px;">
+                <span>Click "Select Second PDF" to compare with current document</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="modal-btn modal-btn-primary" id="btn-close-compare-view">Close Comparison</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phase 5 Modal 1: Watermark Engine Modal -->
+  <div class="modal-overlay" id="modal-watermark">
+    <div class="modal-dialog" style="width: 540px;">
+      <div class="modal-header">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="color: #3498db; font-weight: bold;">💧</span>
+          <span>Add Document Watermark</span>
+        </div>
+        <button class="modal-close-btn" id="btn-close-watermark-modal">✕</button>
+      </div>
+      <div class="modal-body">
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+          <div>
+            <label style="font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 4px;">Watermark Text</label>
+            <input type="text" id="watermark-text-input" class="form-input" value="CONFIDENTIAL" style="width: 100%; box-sizing: border-box; background: #222; border: 1px solid var(--border-color); color: #fff; padding: 6px 10px; border-radius: 4px; font-weight: bold;">
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            <div>
+              <label style="font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 4px;">Opacity: <span id="watermark-opacity-val">30%</span></label>
+              <input type="range" id="watermark-opacity-range" min="10" max="100" value="30" style="width: 100%;">
+            </div>
+            <div>
+              <label style="font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 4px;">Rotation: <span id="watermark-rotation-val">45°</span></label>
+              <input type="range" id="watermark-rotation-range" min="-90" max="90" value="45" style="width: 100%;">
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            <div>
+              <label style="font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 4px;">Font Size: <span id="watermark-size-val">54pt</span></label>
+              <input type="range" id="watermark-size-range" min="20" max="96" value="54" style="width: 100%;">
+            </div>
+            <div>
+              <label style="font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 4px;">Color</label>
+              <select id="watermark-color-select" style="width: 100%; background: #222; border: 1px solid var(--border-color); color: #fff; padding: 6px; border-radius: 4px;">
+                <option value="grey">Neutral Grey (#888888)</option>
+                <option value="red">Warning Red (#e53935)</option>
+                <option value="blue">Acrobat Blue (#1473e6)</option>
+                <option value="black">Deep Black (#000000)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Live Watermark Preview Box -->
+          <div>
+            <label style="font-size: 11px; color: var(--text-muted); display: block;">Live Document Simulation</label>
+            <div class="watermark-preview-box" id="watermark-preview-box">
+              <span class="watermark-preview-text" id="watermark-preview-text" style="transform: rotate(-45deg); opacity: 0.3; font-size: 28px; color: #888888;">CONFIDENTIAL</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="modal-btn modal-btn-secondary" id="btn-cancel-watermark">Cancel</button>
+        <button class="modal-btn modal-btn-primary" id="btn-apply-watermark">Apply Watermark to PDF</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phase 5 Modal 2: Bates Numbering (Legal Suite) Modal -->
+  <div class="modal-overlay" id="modal-bates-numbering">
+    <div class="modal-dialog" style="width: 560px;">
+      <div class="modal-header">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="color: #8e44ad; font-weight: bold;">⚖</span>
+          <span>Bates Numbering — Legal Document Stamping</span>
+        </div>
+        <button class="modal-close-btn" id="btn-close-bates-modal">✕</button>
+      </div>
+      <div class="modal-body">
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+          <div style="font-size: 11px; color: var(--text-secondary); line-height: 1.4;">
+            Apply sequential identification numbers to legal discovery, trial exhibits, and corporate files.
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            <div>
+              <label style="font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 4px;">Prefix (e.g. Case / Matter)</label>
+              <input type="text" id="bates-prefix-input" class="form-input" value="CASE-2026-" style="width: 100%; box-sizing: border-box; background: #222; border: 1px solid var(--border-color); color: #fff; padding: 6px 10px; border-radius: 4px; font-family: monospace;">
+            </div>
+            <div>
+              <label style="font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 4px;">Suffix (Optional)</label>
+              <input type="text" id="bates-suffix-input" class="form-input" placeholder="-CONF" style="width: 100%; box-sizing: border-box; background: #222; border: 1px solid var(--border-color); color: #fff; padding: 6px 10px; border-radius: 4px; font-family: monospace;">
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            <div>
+              <label style="font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 4px;">Start Number</label>
+              <input type="number" id="bates-start-input" value="1" min="1" style="width: 100%; box-sizing: border-box; background: #222; border: 1px solid var(--border-color); color: #fff; padding: 6px 10px; border-radius: 4px;">
+            </div>
+            <div>
+              <label style="font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 4px;">Number of Digits</label>
+              <select id="bates-digits-select" style="width: 100%; background: #222; border: 1px solid var(--border-color); color: #fff; padding: 6px; border-radius: 4px;">
+                <option value="6" selected>6 Digits (e.g. 000001)</option>
+                <option value="8">8 Digits (e.g. 00000001)</option>
+                <option value="4">4 Digits (e.g. 0001)</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            <div>
+              <label style="font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 4px;">Position on Page</label>
+              <select id="bates-pos-select" style="width: 100%; background: #222; border: 1px solid var(--border-color); color: #fff; padding: 6px; border-radius: 4px;">
+                <option value="bottom-right" selected>Bottom Right (Footer)</option>
+                <option value="bottom-center">Bottom Center (Footer)</option>
+                <option value="bottom-left">Bottom Left (Footer)</option>
+                <option value="top-right">Top Right (Header)</option>
+                <option value="top-center">Top Center (Header)</option>
+                <option value="top-left">Top Left (Header)</option>
+              </select>
+            </div>
+            <div>
+              <label style="font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 4px;">Font Size</label>
+              <select id="bates-size-select" style="width: 100%; background: #222; border: 1px solid var(--border-color); color: #fff; padding: 6px; border-radius: 4px;">
+                <option value="9">9 pt (Compact)</option>
+                <option value="10" selected>10 pt (Standard)</option>
+                <option value="12">12 pt (Large)</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label style="font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 4px;">Sample Generated Stamp</label>
+            <div class="bates-preview-box" id="bates-preview-text">
+              Preview: CASE-2026-000001
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="modal-btn modal-btn-secondary" id="btn-cancel-bates">Cancel</button>
+        <button class="modal-btn modal-btn-primary" id="btn-apply-bates">Stamp Bates Numbers</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phase 5 Modal 3: Preflight & PDF Standards Audit Modal -->
+  <div class="modal-overlay" id="modal-preflight">
+    <div class="modal-dialog" style="width: 640px;">
+      <div class="modal-header">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="color: #f39c12; font-weight: bold;">🔍</span>
+          <span>Preflight & Document Standards Audit</span>
+        </div>
+        <button class="modal-close-btn" id="btn-close-preflight-modal">✕</button>
+      </div>
+      <div class="modal-body">
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+          <div style="display: flex; gap: 10px; align-items: center;">
+            <select id="preflight-profile-select" style="flex: 1; background: #222; border: 1px solid var(--border-color); color: #fff; padding: 7px 10px; border-radius: 4px; font-size: 12px;">
+              <option value="pdfx" selected>PDF/X-1a (Print Production & Color Space)</option>
+              <option value="pdfa">PDF/A-1b (Electronic Document Archiving)</option>
+              <option value="pdfua">PDF/UA (Universal Accessibility / Section 508)</option>
+              <option value="health">General Acrobat Health & Integrity Audit</option>
+            </select>
+            <button class="modal-btn modal-btn-primary" id="btn-run-preflight-audit" style="white-space: nowrap;">Run Analysis</button>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 4px;">
+            <span style="font-size: 12px; font-weight: 600;">Audit Diagnostic Findings</span>
+            <span class="diff-badge" id="preflight-status-badge" style="background: #2e7d32;">Ready to Audit</span>
+          </div>
+
+          <div class="preflight-report-box" id="preflight-results-box">
+            <div style="text-align: center; color: var(--text-muted); padding: 20px;">
+              Click "Run Analysis" to perform comprehensive preflight diagnostics against standard ISO PDF profiles.
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="modal-btn modal-btn-secondary" id="btn-export-preflight-report">Export Report (.txt)</button>
+        <button class="modal-btn modal-btn-primary" id="btn-dismiss-preflight">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phase 6 Modal 1: Document Sanitization & Flattening Modal -->
+  <div class="modal-overlay" id="modal-sanitize-flatten">
+    <div class="modal-dialog" style="width: 580px;">
+      <div class="modal-header">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="color: #e74c3c; font-weight: bold;">🛡</span>
+          <span>Sanitize & Flatten Document (Security Lock)</span>
+        </div>
+        <button class="modal-close-btn" id="btn-close-sanitize-modal">✕</button>
+      </div>
+      <div class="modal-body">
+        <div style="display: flex; flex-direction: column; gap: 14px;">
+          <div style="background: rgba(231, 76, 60, 0.1); border-left: 3px solid #e74c3c; padding: 8px 12px; font-size: 11px; color: #fca5a5; line-height: 1.4;">
+            Sanitizing permanently destroys sensitive hidden information, XML metadata packets, and burns interactive layers directly into static page graphics so they cannot be recovered or extracted.
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 10px; font-size: 12px;">
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+              <input type="checkbox" id="chk-sanitize-metadata" checked>
+              <span><strong>Strip Metadata:</strong> Remove Author, Producer, Creation Date, Subject, and Keywords.</span>
+            </label>
+
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+              <input type="checkbox" id="chk-sanitize-flatten-annots" checked>
+              <span><strong>Flatten Annotations:</strong> Convert sticky notes, drawings, and stamps into static page content.</span>
+            </label>
+
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+              <input type="checkbox" id="chk-sanitize-flatten-forms" checked>
+              <span><strong>Flatten Form Fields:</strong> Lock all AcroForm interactive fields into permanent static text.</span>
+            </label>
+
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+              <input type="checkbox" id="chk-sanitize-redactions" checked>
+              <span><strong>Burn Redactions:</strong> Permanently blackout any placed redaction areas.</span>
+            </label>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="modal-btn modal-btn-secondary" id="btn-cancel-sanitize">Cancel</button>
+        <button class="modal-btn modal-btn-danger" id="btn-run-sanitize">Sanitize & Flatten PDF</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phase 6 Modal 2: Action Wizard (Automated Batch Pipelines) Modal -->
+  <div class="modal-overlay" id="modal-action-wizard">
+    <div class="modal-dialog" style="width: 620px;">
+      <div class="modal-header">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="color: #9b59b6; font-weight: bold;">⚡</span>
+          <span>Action Wizard — Automated Batch Workflow Studio</span>
+        </div>
+        <button class="modal-close-btn" id="btn-close-action-wizard">✕</button>
+      </div>
+      <div class="modal-body">
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+          <div style="font-size: 11px; color: var(--text-secondary);">
+            Execute multi-step document pipelines automatically in sequence with a single click.
+          </div>
+
+          <div>
+            <label style="font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 4px;">Select Action Pipeline</label>
+            <select id="action-pipeline-select" style="width: 100%; background: #222; border: 1px solid var(--border-color); color: #fff; padding: 8px; border-radius: 4px; font-size: 12px;">
+              <option value="legal">⚖ Legal Production Pipeline (Bates Stamping ➔ Metadata Removal ➔ Flatten)</option>
+              <option value="review">🔒 Confidential Review Pipeline (Burn Redactions ➔ Watermark ➔ Compress)</option>
+              <option value="archive">📦 Archival Compliance Pipeline (Preflight Audit ➔ Sanitize ➔ Security Lock)</option>
+            </select>
+          </div>
+
+          <div>
+            <label style="font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 6px;">Pipeline Sequence Steps</label>
+            <div id="action-pipeline-steps-view">
+              <!-- Dynamically populated steps -->
+            </div>
+          </div>
+
+          <!-- Progress and Status -->
+          <div id="action-wizard-progress-wrap" style="display: none; margin-top: 6px;">
+            <div style="display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 4px;">
+              <span id="action-wizard-status-text">Executing step 1/3...</span>
+              <span id="action-wizard-percent-text">33%</span>
+            </div>
+            <div style="width: 100%; height: 6px; background: #333; border-radius: 3px; overflow: hidden;">
+              <div id="action-wizard-progress-bar" style="width: 33%; height: 100%; background: var(--acrobat-blue); transition: width 0.3s ease;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="modal-btn modal-btn-secondary" id="btn-cancel-action-wizard">Close</button>
+        <button class="modal-btn modal-btn-primary" id="btn-run-action-wizard">Execute Action Sequence</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phase 7 Modal 1: Print Production & CMYK Output Preview Modal -->
+  <div class="modal-overlay" id="modal-output-preview">
+    <div class="modal-dialog" style="width: 860px; max-width: 95vw;">
+      <div class="modal-header">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="color: #e67e22; font-weight: bold;">🖨</span>
+          <span>Output Preview — CMYK Plate Separations & Ink Coverage</span>
+        </div>
+        <button class="modal-close-btn" id="btn-close-output-preview">✕</button>
+      </div>
+      <div class="modal-body" style="padding: 12px;">
+        <div style="display: flex; gap: 16px;">
+          <!-- Left Controls Column -->
+          <div style="width: 280px; display: flex; flex-direction: column; gap: 14px; background: #181818; padding: 12px; border-radius: 6px; border: 1px solid var(--border-color);">
+            <div>
+              <label style="font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 4px;">Simulation Profile</label>
+              <select id="output-preview-profile" style="width: 100%; background: #222; border: 1px solid var(--border-color); color: #fff; padding: 6px; border-radius: 4px; font-size: 11px;">
+                <option value="swop" selected>U.S. Web Coated (SWOP) v2</option>
+                <option value="fogra39">Coated FOGRA39 (ISO 12647-2)</option>
+                <option value="gracol">GRACoL 2006 (Coated Commercial)</option>
+                <option value="generic">Generic CMYK Press Profile</option>
+              </select>
+            </div>
+
+            <!-- TAC Warning -->
+            <div style="background: rgba(255,255,255,0.03); padding: 8px; border-radius: 4px; border: 1px solid var(--border-color);">
+              <label style="display: flex; align-items: center; gap: 6px; font-size: 11px; cursor: pointer;">
+                <input type="checkbox" id="chk-tac-limit">
+                <span>Highlight Total Area Coverage (TAC)</span>
+              </label>
+              <div style="display: flex; align-items: center; gap: 6px; margin-top: 6px; font-size: 11px; color: var(--text-secondary);">
+                <span>Limit:</span>
+                <input type="number" id="tac-limit-val" value="300" min="200" max="400" style="width: 60px; background: #222; border: 1px solid var(--border-color); color: #fff; padding: 2px 4px; border-radius: 3px;">
+                <span>%</span>
+              </div>
+            </div>
+
+            <!-- Live Ink Coverage Meter -->
+            <div>
+              <span style="font-size: 11px; font-weight: 600; color: var(--text-secondary); display: block; margin-bottom: 6px;">Estimated Ink Coverage</span>
+              <div style="display: flex; flex-direction: column; gap: 4px; font-size: 11px;">
+                <div style="display: flex; justify-content: space-between;"><span style="color: #00e5ff;">Cyan:</span> <span id="ink-cov-c">24%</span></div>
+                <div style="display: flex; justify-content: space-between;"><span style="color: #ff4081;">Magenta:</span> <span id="ink-cov-m">38%</span></div>
+                <div style="display: flex; justify-content: space-between;"><span style="color: #ffd600;">Yellow:</span> <span id="ink-cov-y">42%</span></div>
+                <div style="display: flex; justify-content: space-between;"><span style="color: #eee;">Black (K):</span> <span id="ink-cov-k">15%</span></div>
+                <div style="height: 1px; background: var(--border-color); margin: 2px 0;"></div>
+                <div style="display: flex; justify-content: space-between; font-weight: 700;"><span>Total Ink (TAC):</span> <span id="ink-cov-tac" style="color: #4caf50;">119%</span></div>
+              </div>
+            </div>
+
+            <!-- Plate Isolation Checkboxes -->
+            <div>
+              <span style="font-size: 11px; font-weight: 600; color: var(--text-secondary); display: block; margin-bottom: 6px;">Process Plates (Color Separations)</span>
+              <div style="display: flex; flex-direction: column; gap: 6px; font-size: 12px;">
+                <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
+                  <input type="checkbox" id="chk-plate-cyan" checked>
+                  <span style="width: 12px; height: 12px; background: #00e5ff; display: inline-block; border-radius: 2px;"></span>
+                  <span>Process Cyan</span>
+                </label>
+                <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
+                  <input type="checkbox" id="chk-plate-magenta" checked>
+                  <span style="width: 12px; height: 12px; background: #ff4081; display: inline-block; border-radius: 2px;"></span>
+                  <span>Process Magenta</span>
+                </label>
+                <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
+                  <input type="checkbox" id="chk-plate-yellow" checked>
+                  <span style="width: 12px; height: 12px; background: #ffd600; display: inline-block; border-radius: 2px;"></span>
+                  <span>Process Yellow</span>
+                </label>
+                <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
+                  <input type="checkbox" id="chk-plate-black" checked>
+                  <span style="width: 12px; height: 12px; background: #222; border: 1px solid #777; display: inline-block; border-radius: 2px;"></span>
+                  <span>Process Black</span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Plate Preview Viewport -->
+          <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #222; border-radius: 6px; border: 1px solid var(--border-color); padding: 16px; min-height: 440px; overflow: auto;" id="output-preview-canvas-container">
+            <canvas id="output-preview-canvas" style="box-shadow: 0 4px 16px rgba(0,0,0,0.5); max-width: 100%; max-height: 480px;"></canvas>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="modal-btn modal-btn-primary" id="btn-dismiss-output-preview">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phase 7 Modal 2: Booklet & N-Up Imposition Studio Modal -->
+  <div class="modal-overlay" id="modal-print-imposition">
+    <div class="modal-dialog" style="width: 720px; max-width: 95vw;">
+      <div class="modal-header">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="color: #1abc9c; font-weight: bold;">📖</span>
+          <span>Booklet & N-Up Imposition Studio (Print Production)</span>
+        </div>
+        <button class="modal-close-btn" id="btn-close-imposition-modal">✕</button>
+      </div>
+      <div class="modal-body">
+        <div style="display: flex; flex-direction: column; gap: 14px;">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            <div>
+              <label style="font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 4px;">Imposition Layout</label>
+              <select id="imposition-mode-select" style="width: 100%; background: #222; border: 1px solid var(--border-color); color: #fff; padding: 6px; border-radius: 4px; font-size: 12px;">
+                <option value="booklet" selected>Booklet (Saddle-Stitch 2-Up Imposition)</option>
+                <option value="2up">2 Pages Per Sheet (2-Up Horizontal)</option>
+                <option value="4up">4 Pages Per Sheet (4-Up Grid 2x2)</option>
+                <option value="9up">9 Pages Per Sheet (3x3 Thumbnail Grid)</option>
+              </select>
+            </div>
+            <div>
+              <label style="font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 4px;">Sheet Paper Size</label>
+              <select id="imposition-sheet-size" style="width: 100%; background: #222; border: 1px solid var(--border-color); color: #fff; padding: 6px; border-radius: 4px; font-size: 12px;">
+                <option value="letter" selected>US Letter (8.5 x 11 in)</option>
+                <option value="a4">A4 (210 x 297 mm)</option>
+                <option value="tabloid">Tabloid / Ledger (11 x 17 in)</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.03); padding: 8px 12px; border-radius: 4px; border: 1px solid var(--border-color);">
+            <label style="display: flex; align-items: center; gap: 6px; font-size: 11px; cursor: pointer;">
+              <input type="checkbox" id="chk-imposition-marks" checked>
+              <span>Include Standard Printer Marks (Crop Marks, Bleed Box, Registration Targets)</span>
+            </label>
+            <span style="font-size: 11px; color: var(--acrobat-blue); font-weight: 600;" id="imposition-sheet-count-label">Sheet Count: 1</span>
+          </div>
+
+          <div>
+            <label style="font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 6px;">Visual Sheet Layout Simulation</label>
+            <div id="imposition-preview-grid" style="display: flex; gap: 12px; overflow-x: auto; padding: 12px; background: #141414; border: 1px solid var(--border-color); border-radius: 6px; min-height: 140px; align-items: center;">
+              <!-- Dynamically populated sheets -->
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="modal-btn modal-btn-secondary" id="btn-cancel-imposition">Cancel</button>
+        <button class="modal-btn modal-btn-primary" id="btn-generate-imposed-pdf">Generate Imposed PDF & Export</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phase 8 Modal: Quick Keyboard Shortcuts Reference -->
+  <div class="modal-overlay" id="modal-shortcuts">
+    <div class="modal-dialog" style="width: 820px; max-width: 95vw;">
+      <div class="modal-header">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="color: var(--acrobat-blue); font-weight: bold;">⌨</span>
+          <span>Adobe Acrobat DC Keyboard Shortcuts Reference</span>
+        </div>
+        <button class="modal-close-btn" id="btn-close-shortcuts-modal">✕</button>
+      </div>
+      <div class="modal-body" style="padding: 16px;">
+        <div class="shortcuts-grid">
+          <!-- Group 1: General & File -->
+          <div class="shortcuts-group">
+            <h4>General & File</h4>
+            <div class="shortcut-row">
+              <span>Open PDF</span>
+              <kbd class="kbd-badge">Ctrl + O</kbd>
+            </div>
+            <div class="shortcut-row">
+              <span>Save / Export Annotated</span>
+              <kbd class="kbd-badge">Ctrl + S</kbd>
+            </div>
+            <div class="shortcut-row">
+              <span>Print Document</span>
+              <kbd class="kbd-badge">Ctrl + P</kbd>
+            </div>
+            <div class="shortcut-row">
+              <span>Find in Document</span>
+              <kbd class="kbd-badge">Ctrl + F</kbd>
+            </div>
+            <div class="shortcut-row">
+              <span>Toggle Fullscreen</span>
+              <kbd class="kbd-badge">F11</kbd>
+            </div>
+            <div class="shortcut-row">
+              <span>Shortcuts Reference</span>
+              <kbd class="kbd-badge">F1 or ?</kbd>
+            </div>
+          </div>
+
+          <!-- Group 2: Navigation & View -->
+          <div class="shortcuts-group">
+            <h4>View & Navigation</h4>
+            <div class="shortcut-row">
+              <span>Next Page</span>
+              <kbd class="kbd-badge">→ or PgDn</kbd>
+            </div>
+            <div class="shortcut-row">
+              <span>Previous Page</span>
+              <kbd class="kbd-badge">← or PgUp</kbd>
+            </div>
+            <div class="shortcut-row">
+              <span>Zoom In / Out</span>
+              <kbd class="kbd-badge">Ctrl + / -</kbd>
+            </div>
+            <div class="shortcut-row">
+              <span>Actual Size (100%)</span>
+              <kbd class="kbd-badge">Ctrl + 0</kbd>
+            </div>
+            <div class="shortcut-row">
+              <span>Fit One Full Page</span>
+              <kbd class="kbd-badge">Ctrl + Alt + P</kbd>
+            </div>
+            <div class="shortcut-row">
+              <span>Rotate Clockwise (90°)</span>
+              <kbd class="kbd-badge">Ctrl + R</kbd>
+            </div>
+            <div class="shortcut-row">
+              <span>Distraction-free Read Mode</span>
+              <kbd class="kbd-badge">Ctrl + H</kbd>
+            </div>
+          </div>
+
+          <!-- Group 3: Tools & Workspaces -->
+          <div class="shortcuts-group">
+            <h4>Workspace Modes & Tools</h4>
+            <div class="shortcut-row">
+              <span>View Mode</span>
+              <kbd class="kbd-badge">V</kbd>
+            </div>
+            <div class="shortcut-row">
+              <span>Hand Pan Tool</span>
+              <kbd class="kbd-badge">H</kbd>
+            </div>
+            <div class="shortcut-row">
+              <span>Select Cursor Tool</span>
+              <kbd class="kbd-badge">S</kbd>
+            </div>
+            <div class="shortcut-row">
+              <span>Comment & Markup Mode</span>
+              <kbd class="kbd-badge">C</kbd>
+            </div>
+            <div class="shortcut-row">
+              <span>Fill & Sign Mode</span>
+              <kbd class="kbd-badge">F</kbd>
+            </div>
+            <div class="shortcut-row">
+              <span>Prepare Form Mode</span>
+              <kbd class="kbd-badge">M</kbd>
+            </div>
+            <div class="shortcut-row">
+              <span>Read Out Loud (TTS)</span>
+              <kbd class="kbd-badge">Ctrl + Shift + Y</kbd>
+            </div>
+          </div>
+
+          <!-- Group 4: Production & Pro Tools -->
+          <div class="shortcuts-group">
+            <h4>Print Production & Pro Tools</h4>
+            <div class="shortcut-row">
+              <span>CMYK Output Preview</span>
+              <kbd class="kbd-badge">Ctrl + Alt + O</kbd>
+            </div>
+            <div class="shortcut-row">
+              <span>Booklet & N-Up Imposition</span>
+              <kbd class="kbd-badge">Ctrl + Alt + I</kbd>
+            </div>
+            <div class="shortcut-row">
+              <span>Organize Pages Studio</span>
+              <kbd class="kbd-badge">Ctrl + Shift + O</kbd>
+            </div>
+            <div class="shortcut-row">
+              <span>Preflight ISO Auditor</span>
+              <kbd class="kbd-badge">Ctrl + Shift + X</kbd>
+            </div>
+            <div class="shortcut-row">
+              <span>Sanitize & Flatten</span>
+              <kbd class="kbd-badge">Ctrl + Shift + S</kbd>
+            </div>
+            <div class="shortcut-row">
+              <span>Action Wizard Pipelines</span>
+              <kbd class="kbd-badge">Ctrl + Shift + A</kbd>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="modal-btn modal-btn-primary" id="btn-dismiss-shortcuts-modal">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phase 9 Modal 1: Enterprise PKI Certificates & Digital ID Studio -->
+  <div class="modal-overlay" id="modal-certificates-studio">
+    <div class="modal-dialog" style="width: 780px; max-width: 95vw;">
+      <div class="modal-header">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="color: #2ecc71; font-weight: bold;">🛡</span>
+          <span>Certificates & PKI Digital Signature Studio</span>
+        </div>
+        <button class="modal-close-btn" id="btn-close-cert-studio">✕</button>
+      </div>
+      <div class="modal-body" style="padding: 16px;">
+        <!-- Studio Tabs -->
+        <div class="cert-studio-tabs">
+          <button class="cert-tab-btn active" id="tab-cert-sign" data-pane="cert-pane-sign">Digitally Sign Document</button>
+          <button class="cert-tab-btn" id="tab-cert-keystore" data-pane="cert-pane-keystore">Digital IDs & Keystore</button>
+          <button class="cert-tab-btn" id="tab-cert-create" data-pane="cert-pane-create">+ Create Self-Signed ID</button>
+        </div>
+
+        <!-- Pane 1: Digitally Sign Document -->
+        <div class="cert-studio-pane" id="cert-pane-sign">
+          <div style="display: flex; flex-direction: column; gap: 12px;">
+            <div>
+              <label style="font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 4px;">Select Digital ID for Signing</label>
+              <select id="cert-sign-id-select" style="width: 100%; background: #222; border: 1px solid var(--border-color); color: #fff; padding: 6px; border-radius: 4px; font-size: 12px;"></select>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+              <div>
+                <label style="font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 4px;">Reason for Signing</label>
+                <select id="cert-sign-reason" style="width: 100%; background: #222; border: 1px solid var(--border-color); color: #fff; padding: 6px; border-radius: 4px; font-size: 12px;">
+                  <option value="I approve this document" selected>I approve this document</option>
+                  <option value="I am the author of this document">I am the author of this document</option>
+                  <option value="I have reviewed this document">I have reviewed this document</option>
+                  <option value="Legal seal and verification">Legal seal and verification</option>
+                </select>
+              </div>
+              <div>
+                <label style="font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 4px;">Location / Jurisdiction</label>
+                <input type="text" id="cert-sign-location" value="Corporate Headquarters" style="width: 100%; background: #222; border: 1px solid var(--border-color); color: #fff; padding: 6px; border-radius: 4px; font-size: 12px;">
+              </div>
+            </div>
+            <div style="background: rgba(46, 204, 113, 0.06); border: 1px solid rgba(46, 204, 113, 0.25); border-radius: 6px; padding: 10px; font-size: 11px; color: var(--text-secondary); line-height: 1.5;">
+              <strong style="color: #2ecc71;">Acrobat PKI Engine:</strong> Web Crypto API will calculate a SHA-256 cryptographic digest of the document buffer and bind it to your cryptographic key pair with an RFC 3161 ISO-compliant timestamp.
+            </div>
+          </div>
+        </div>
+
+        <!-- Pane 2: Keystore & Manage Digital IDs -->
+        <div class="cert-studio-pane" id="cert-pane-keystore" style="display: none;">
+          <div id="cert-id-list-container" style="max-height: 280px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px;"></div>
+        </div>
+
+        <!-- Pane 3: Create Self-Signed Digital ID -->
+        <div class="cert-studio-pane" id="cert-pane-create" style="display: none;">
+          <div style="display: flex; flex-direction: column; gap: 10px;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+              <div>
+                <label style="font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 4px;">Common Name (e.g. Full Name) *</label>
+                <input type="text" id="cert-create-cn" placeholder="e.g. John Doe" style="width: 100%; background: #222; border: 1px solid var(--border-color); color: #fff; padding: 6px; border-radius: 4px; font-size: 12px;">
+              </div>
+              <div>
+                <label style="font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 4px;">Email Address *</label>
+                <input type="email" id="cert-create-email" placeholder="e.g. jdoe@enterprise.com" style="width: 100%; background: #222; border: 1px solid var(--border-color); color: #fff; padding: 6px; border-radius: 4px; font-size: 12px;">
+              </div>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr 80px; gap: 10px;">
+              <div>
+                <label style="font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 4px;">Organization Name</label>
+                <input type="text" id="cert-create-o" placeholder="e.g. Global Tech LLC" style="width: 100%; background: #222; border: 1px solid var(--border-color); color: #fff; padding: 6px; border-radius: 4px; font-size: 12px;">
+              </div>
+              <div>
+                <label style="font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 4px;">Organizational Unit</label>
+                <input type="text" id="cert-create-ou" placeholder="e.g. Legal & Compliance" style="width: 100%; background: #222; border: 1px solid var(--border-color); color: #fff; padding: 6px; border-radius: 4px; font-size: 12px;">
+              </div>
+              <div>
+                <label style="font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 4px;">Country (2-letter)</label>
+                <input type="text" id="cert-create-c" value="US" maxlength="2" style="width: 100%; background: #222; border: 1px solid var(--border-color); color: #fff; padding: 6px; border-radius: 4px; font-size: 12px; text-transform: uppercase;">
+              </div>
+            </div>
+            <div>
+              <label style="font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 4px;">Key Algorithm</label>
+              <select id="cert-create-algo" style="width: 100%; background: #222; border: 1px solid var(--border-color); color: #fff; padding: 6px; border-radius: 4px; font-size: 12px;">
+                <option value="RSASSA-PKCS1-v1_5" selected>RSA 2048-bit with SHA-256 (Acrobat Standard)</option>
+                <option value="RSA-PSS">RSA-PSS 2048-bit with SHA-256 (High Security)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="modal-btn modal-btn-secondary" id="btn-cancel-cert-studio">Close</button>
+        <button class="modal-btn modal-btn-primary" id="btn-action-cert-studio">Place Digital Signature</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phase 9: Architectural Measurement & CAD Calibration HUD -->
+  <div id="measure-hud-bar">
+    <div style="display: flex; align-items: center; gap: 6px;">
+      <span style="color: #f39c12; font-size: 14px;">📐</span>
+      <span style="font-weight: 600;">CAD Measure:</span>
+    </div>
+    <select id="measure-scale-select" style="background: #181818; border: 1px solid var(--border-color); color: #fff; border-radius: 4px; padding: 2px 6px; font-size: 11px;">
+      <option value="1" selected>1 pt = 1 pt (Screen)</option>
+      <option value="0.08333">1 in = 1 ft (1:12 Arch)</option>
+      <option value="0.00833">1 in = 10 ft (1:120 Eng)</option>
+      <option value="0.01">1 cm = 1 m (1:100 Metric)</option>
+      <option value="0.002">1 cm = 5 m (1:500 Site)</option>
+    </select>
+    <div style="height: 16px; width: 1px; background: var(--border-color);"></div>
+    <div style="font-family: monospace; font-size: 12px; color: #f1c40f; font-weight: bold;">
+      <span id="measure-hud-distance">0.00 pt</span>
+    </div>
+    <div style="font-size: 11px; color: var(--text-muted);">
+      <span id="measure-hud-angle">0.0°</span>
+    </div>
+    <button class="modal-close-btn" id="btn-close-measure-hud" style="font-size: 12px; margin-left: 4px;">✕</button>
+  </div>
+
+  <!-- Speech HUD (Read Out Loud Floating Controls) -->
+  <div id="speech-hud-bar">
+    <div style="display: flex; align-items: center; gap: 6px;">
+      <span style="color: var(--acrobat-blue); font-size: 14px;">🔊</span>
+      <span id="speech-status-label" style="font-weight: 600;">Reading Page 1</span>
+    </div>
+    <div style="height: 16px; width: 1px; background: var(--border-color);"></div>
+    <button class="tool-btn" id="speech-btn-pause" title="Pause / Resume">⏸</button>
+    <button class="tool-btn" id="speech-btn-stop" title="Stop Reading" style="color: #e53e3e;">⏹</button>
+    <select id="speech-rate-select" style="background: #181818; border: 1px solid var(--border-color); color: #fff; border-radius: 4px; padding: 2px 6px; font-size: 11px;">
+      <option value="0.8">0.8x</option>
+      <option value="1" selected>1.0x</option>
+      <option value="1.2">1.2x</option>
+      <option value="1.5">1.5x</option>
+    </select>
+    <button class="modal-close-btn" id="speech-btn-close" style="font-size: 12px; margin-left: 4px;">✕</button>
+  </div>
+
+  <!-- Read Mode Exit Button -->
+  <button id="read-mode-exit-btn">
+    <span>✕</span>
+    <span>Exit Read Mode</span>
+  </button>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container"></div>
+
+  <!-- Scripts: PDF-Lib, PDF.js, Tesseract & Application Engine -->
+  <script src="vendor/pdf-lib.min.js"></script>
+  <script src="vendor/pdf.min.js"></script>
+  <script src="vendor/tesseract.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

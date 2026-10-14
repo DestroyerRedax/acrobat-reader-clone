@@ -1,0 +1,19 @@
+{
+  "name": "Adobe Acrobat Reader DC (Enterprise Web Edition)",
+  "short_name": "Acrobat DC",
+  "description": "Professional 100% Client-Side PDF Reader, Annotator, Editor, Preflight & Imposition Suite",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#1e1e1e",
+  "theme_color": "#1e1e1e",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["productivity", "utilities", "business"]
+}

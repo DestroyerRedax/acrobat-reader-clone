@@ -1,0 +1,88 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R 4 0 R 5 0 R] /Count 3 >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 6 0 R /Resources << /Font << /F1 9 0 R >> >> >>
+endobj
+4 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 7 0 R /Resources << /Font << /F1 9 0 R >> >> >>
+endobj
+5 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 8 0 R /Resources << /Font << /F1 9 0 R >> >> >>
+endobj
+6 0 obj
+<< /Length 260 >>
+stream
+BT
+/F1 24 Tf
+50 720 Td
+(Adobe Acrobat Reader Clone - Phase 1) Tj
+0 -40 Td
+/F1 14 Tf
+(Executive Summary & Architectural Specification) Tj
+0 -30 Td
+/F1 11 Tf
+(This document serves as the live test benchmark for the newly engineered) Tj
+0 -18 Td
+(Adobe Acrobat Reader clone UI shell and rendering pipeline.) Tj
+0 -25 Td
+(Page 1: System Architecture and Subsystems Overview) Tj
+ET
+endstream
+endobj
+7 0 obj
+<< /Length 220 >>
+stream
+BT
+/F1 20 Tf
+50 720 Td
+(Page 2: Core Graphics & Font Engine) Tj
+0 -35 Td
+/F1 11 Tf
+(Demonstrating multi-page virtualized rendering, font hinting,) Tj
+0 -18 Td
+(and continuous scrolling in the Acrobat Reader canvas.) Tj
+0 -25 Td
+(High-performance rendering with PDF.js engine integration.) Tj
+ET
+endstream
+endobj
+8 0 obj
+<< /Length 230 >>
+stream
+BT
+/F1 20 Tf
+50 720 Td
+(Page 3: Interactive Annotations & Signatures) Tj
+0 -35 Td
+/F1 11 Tf
+(Demonstrating highlight annotations, sticky notes, freehand ink,) Tj
+0 -18 Td
+(and Fill & Sign capabilities matching the original Acrobat specifications.) Tj
+ET
+endstream
+endobj
+9 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+xref
+0 10
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000130 00000 n 
+0000000257 00000 n 
+0000000384 00000 n 
+0000000511 00000 n 
+0000000824 00000 n 
+0000001097 00000 n 
+0000001380 00000 n 
+trailer
+<< /Size 10 /Root 1 0 R >>
+startxref
+1447
+%%EOF
