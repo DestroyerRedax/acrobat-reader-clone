@@ -1997,4 +1997,160 @@ body.read-mode #read-mode-exit-btn {
   border: 1px solid #27ae60;
 }
 
+/* =====================================================================
+   EDIT PDF CONTINUOUS TRACK ENGINE & BOUNDING BOX STYLES
+   ===================================================================== */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.acrobat-edit-box {
+  position: absolute;
+  box-sizing: border-box;
+  background: rgba(255, 255, 255, 0.98);
+  border: 1px dashed rgba(20, 115, 230, 0.5);
+  border-radius: 2px;
+  cursor: text;
+  transition: border-color 0.12s ease, box-shadow 0.12s ease;
+  z-index: 35;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.7);
+}
+
+.acrobat-edit-box:hover {
+  border: 1.5px dashed var(--acrobat-blue);
+  box-shadow: 0 0 0 2px rgba(20, 115, 230, 0.25);
+  z-index: 45;
+}
+
+.acrobat-edit-box.active,
+.acrobat-edit-box:focus-within {
+  border: 1.5px solid var(--acrobat-blue);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2), 0 0 0 2px rgba(20, 115, 230, 0.3);
+  z-index: 60;
+}
+
+.acrobat-edit-content {
+  outline: none;
+  border: none;
+  background: transparent;
+  width: 100%;
+  height: 100%;
+  padding: 1px 3px;
+  line-height: 1.4;
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-family: var(--font-bangla-sans);
+  text-rendering: optimizeLegibility;
+  color: #111;
+  min-height: 14px;
+}
+
+.edit-box-toolbar {
+  display: none;
+  position: absolute;
+  top: -32px;
+  left: 0;
+  background: #1e1e1e;
+  border: 1px solid #444;
+  border-radius: 4px;
+  padding: 2px 6px;
+  gap: 4px;
+  align-items: center;
+  z-index: 90;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+.acrobat-edit-box:hover .edit-box-toolbar,
+.acrobat-edit-box.active .edit-box-toolbar,
+.acrobat-edit-box:focus-within .edit-box-toolbar {
+  display: flex;
+}
+
+.edit-tb-btn {
+  background: #2a2a2a;
+  border: 1px solid #444;
+  color: #fff;
+  border-radius: 3px;
+  padding: 2px 6px;
+  font-size: 11px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.edit-tb-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: #666;
+}
+
+.edit-tb-select {
+  background: #2a2a2a;
+  border: 1px solid #444;
+  color: #fff;
+  border-radius: 3px;
+  padding: 1px 4px;
+  font-size: 10px;
+  cursor: pointer;
+  outline: none;
+  height: 22px;
+  max-width: 110px;
+}
+
+.edit-tb-color {
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border: 1px solid #444;
+  border-radius: 3px;
+  background: transparent;
+  cursor: pointer;
+}
+
+.edit-tb-drag {
+  color: #888;
+  cursor: grab;
+  font-size: 14px;
+  padding: 0 4px;
+  user-select: none;
+}
+.edit-tb-drag:active {
+  cursor: grabbing;
+}
+
+/* Object Box (for images & figures) */
+.acrobat-object-box {
+  position: absolute;
+  box-sizing: border-box;
+  border: 1.5px dashed #e05a00;
+  border-radius: 3px;
+  cursor: move;
+  z-index: 38;
+  background: transparent;
+}
+.acrobat-object-box:hover,
+.acrobat-object-box.active {
+  border: 2px solid #e05a00;
+  box-shadow: 0 0 0 2px rgba(224, 90, 0, 0.25);
+  z-index: 55;
+}
+
+.object-box-actions {
+  display: none;
+  position: absolute;
+  top: -28px;
+  right: 0;
+  background: #222;
+  border: 1px solid #444;
+  border-radius: 4px;
+  padding: 2px 6px;
+  gap: 4px;
+  z-index: 85;
+}
+.acrobat-object-box:hover .object-box-actions,
+.acrobat-object-box.active .object-box-actions {
+  display: flex;
+}
+
+
 

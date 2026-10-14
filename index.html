@@ -350,6 +350,7 @@
     <!-- Center Mode Switcher Tabs -->
     <div class="mode-tab-group">
       <button class="mode-tab-btn active" id="tab-mode-view">Read & View</button>
+      <button class="mode-tab-btn" id="tab-mode-edit">Edit PDF</button>
       <button class="mode-tab-btn" id="tab-mode-comment">Comment & Markup</button>
       <button class="mode-tab-btn" id="tab-mode-sign">Fill & Sign</button>
       <button class="mode-tab-btn" id="tab-mode-form">Prepare Form</button>
@@ -545,6 +546,42 @@
     <button class="modal-btn modal-btn-primary" id="btn-save-form-fields" style="font-size: 11px; padding: 4px 10px;">
       Save Form Fields into PDF
     </button>
+  </section>
+
+  <!-- =====================================================================
+       4D. CONTEXTUAL EDIT PDF TOOLBAR (Continuous Track Edit PDF Studio)
+       ===================================================================== -->
+  <section id="edit-pdf-toolbar" style="display: none; height: 42px; background: #262626; border-bottom: 1px solid var(--border-color); align-items: center; padding: 0 16px; gap: 10px; font-size: 12px; z-index: 75;">
+    <div style="display: flex; align-items: center; gap: 6px;">
+      <span style="color: #e05a00; font-weight: bold; font-size: 13px;">✏️ Edit PDF</span>
+      <span id="edit-box-count-badge" class="doc-status-pill" style="background: rgba(224, 90, 0, 0.2); color: #ff9800; border: 1px solid rgba(224,90,0,0.4);">0 Boxes</span>
+    </div>
+
+    <div class="tool-separator"></div>
+
+    <button class="fillsign-btn active" id="btn-edit-add-text" title="Add New Text Box (T)">
+      <span>🔤 Add Text</span>
+    </button>
+
+    <button class="fillsign-btn" id="btn-edit-add-image" title="Add Image to Document">
+      <span>🖼️ Add Image</span>
+    </button>
+    <input type="file" id="edit-image-file-input" accept="image/png,image/jpeg,image/webp" style="display: none;">
+
+    <div class="tool-separator"></div>
+
+    <button class="fillsign-btn" id="btn-edit-reocr" title="Re-run Auto OCR on all pages">
+      <span>⚡ Re-Analyze & OCR</span>
+    </button>
+
+    <div style="display: flex; align-items: center; gap: 6px; margin-left: auto;">
+      <button class="modal-btn modal-btn-secondary" id="btn-edit-done" style="font-size: 11px; padding: 4px 12px; background: rgba(255,255,255,0.08); border-color: #555;">
+        Close Edit Mode
+      </button>
+      <button class="modal-btn modal-btn-primary" id="btn-save-edit-pdf" style="font-size: 11px; padding: 4px 12px; background: #e05a00; border-color: #e05a00;">
+        Save Changes
+      </button>
+    </div>
   </section>
 
   <!-- =====================================================================
@@ -1170,6 +1207,29 @@
         <div style="display: flex; gap: 8px;">
           <button class="modal-btn modal-btn-secondary" id="btn-ocr-copy">Copy to Clipboard</button>
           <button class="modal-btn modal-btn-primary" id="btn-ocr-download">Download as Text (.txt)</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit PDF Auto-OCR & Structure Analysis Progress Modal -->
+  <div class="modal-overlay" id="modal-edit-ocr-progress" style="display: none; z-index: 10000; backdrop-filter: blur(4px);">
+    <div class="modal-dialog" style="width: 440px; text-align: center; padding: 24px 20px; background: #222; border: 1px solid #444; border-radius: 8px; box-shadow: 0 16px 40px rgba(0,0,0,0.7);">
+      <div style="display: flex; flex-direction: column; align-items: center; gap: 14px;">
+        <div style="position: relative; width: 52px; height: 52px;">
+          <div class="edit-ocr-spinner" style="width: 52px; height: 52px; border: 4px solid rgba(224, 90, 0, 0.2); border-top-color: #e05a00; border-radius: 50%; animation: spin 0.8s linear infinite;"></div>
+          <div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 18px;">✏️</div>
+        </div>
+        <div>
+          <div style="font-size: 15px; font-weight: 600; color: #fff; margin-bottom: 4px;">Preparing Document for Editing</div>
+          <div id="edit-ocr-status-message" style="font-size: 12px; color: var(--text-muted); line-height: 1.4;">Analyzing page structures and generating editable text boxes...</div>
+        </div>
+        <div style="width: 100%; background: #333; height: 8px; border-radius: 4px; overflow: hidden;">
+          <div id="edit-ocr-progress-fill" style="width: 0%; height: 100%; background: linear-gradient(90deg, #e05a00, #ff9800); transition: width 0.15s ease;"></div>
+        </div>
+        <div style="display: flex; justify-content: space-between; width: 100%; font-size: 11px; color: var(--text-muted);">
+          <span id="edit-ocr-page-count">Page 1 of 1</span>
+          <span id="edit-ocr-percentage-label" style="color: #ff9800; font-weight: bold;">0%</span>
         </div>
       </div>
     </div>

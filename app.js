@@ -96,6 +96,11 @@ class AcrobatReaderApp {
     this.attachmentsList = [];
     this.cadScale = 1.0;
 
+    // Edit PDF State (Continuous Track Auto-OCR & Bounding Boxes)
+    this.editPdfBoxes = new Map(); // pageNum => Array of EditBox objects
+    this.isDocumentOcredForEdit = false;
+    this.activeEditPdfTool = 'select'; // 'select' | 'addText'
+
     // DOM Elements Cache
     this.cacheElements();
 
@@ -294,9 +299,25 @@ class AcrobatReaderApp {
       // Phase 4: Menu Items & Toolbar
       menuCombineFiles: document.getElementById('menu-combine-files'),
       menuCompareFiles: document.getElementById('menu-compare-files'),
+      tabModeEdit: document.getElementById('tab-mode-edit'),
       tabModeForm: document.getElementById('tab-mode-form'),
       annotToolRedact: document.getElementById('annot-tool-redact'),
       btnApplyRedactions: document.getElementById('btn-apply-redactions'),
+
+      // Edit PDF Mode Toolbar & Progress Elements
+      editPdfToolbar: document.getElementById('edit-pdf-toolbar'),
+      editBoxCountBadge: document.getElementById('edit-box-count-badge'),
+      btnEditAddText: document.getElementById('btn-edit-add-text'),
+      btnEditAddImage: document.getElementById('btn-edit-add-image'),
+      editImageFileInput: document.getElementById('edit-image-file-input'),
+      btnEditReocr: document.getElementById('btn-edit-reocr'),
+      btnEditDone: document.getElementById('btn-edit-done'),
+      btnSaveEditPdf: document.getElementById('btn-save-edit-pdf'),
+      modalEditOcrProgress: document.getElementById('modal-edit-ocr-progress'),
+      editOcrStatusMessage: document.getElementById('edit-ocr-status-message'),
+      editOcrProgressFill: document.getElementById('edit-ocr-progress-fill'),
+      editOcrPageCount: document.getElementById('edit-ocr-page-count'),
+      editOcrPercentageLabel: document.getElementById('edit-ocr-percentage-label'),
 
       // Phase 4: Form Designer Toolbar Elements
       prepareFormToolbar: document.getElementById('prepare-form-toolbar'),
@@ -576,9 +597,13 @@ class AcrobatReaderApp {
 
     // 7. Mode Switcher Tabs
     this.el.tabModeView.addEventListener('click', () => this.switchMode('view'));
+    this.el.tabModeEdit?.addEventListener('click', () => this.switchMode('edit'));
     this.el.tabModeComment.addEventListener('click', () => this.switchMode('comment'));
     this.el.tabModeSign.addEventListener('click', () => this.switchMode('sign'));
     this.el.tabModeForm?.addEventListener('click', () => this.switchMode('form'));
+
+    // 7B. Edit PDF Toolbar Tools
+    this.setupEditPdfToolbarEvents();
 
     // 8. Annotation & Vector Shape Toolbar Tools
     this.setupAnnotationToolbarEvents();
@@ -683,6 +708,13 @@ class AcrobatReaderApp {
       this.totalPages = this.pdfDoc.numPages;
       this.currentPage = 1;
 
+      // Reset Edit PDF state for new document
+      this.editPdfBoxes.clear();
+      this.isDocumentOcredForEdit = false;
+      if (this.el.editBoxCountBadge) {
+        this.el.editBoxCountBadge.textContent = '0 Boxes';
+      }
+
       // Update Header & HUD
       this.el.docTitleText.textContent = this.currentDocumentName;
       this.el.docStatusIndicator.textContent = 'Saved';
@@ -777,7 +809,9 @@ class AcrobatReaderApp {
           e.target.closest('.placed-symbol-stamp') || 
           e.target.closest('.sticky-note-pin') ||
           e.target.closest('.designer-form-field') ||
-          e.target.closest('.placed-redaction-box')
+          e.target.closest('.placed-redaction-box') ||
+          e.target.closest('.acrobat-edit-box') ||
+          e.target.closest('.acrobat-object-box')
         ) {
           return;
         }
@@ -792,15 +826,18 @@ class AcrobatReaderApp {
           this.handleFillSignClick(pageNum, x, y);
         } else if (this.activeMode === 'form') {
           this.handleFormDesignerClick(pageNum, x, y);
+        } else if (this.activeMode === 'edit') {
+          this.handleEditPdfCanvasClick(pageNum, x, y);
         }
       });
 
       this.el.pagesContainer.appendChild(pageContainer);
 
-      // Re-draw any existing annotations, shapes, Fill & Sign items, and Form Designer fields
+      // Re-draw any existing annotations, shapes, Fill & Sign items, Form Designer fields, and Edit PDF boxes
       this.redrawPageAnnotations(pageNum);
       this.redrawPageFillSignItems(pageNum);
       this.redrawDesignerFormFields(pageNum);
+      this.redrawPageEditBoxes(pageNum);
     }
 
     // Setup IntersectionObserver for viewport tracking
@@ -1015,31 +1052,33 @@ class AcrobatReaderApp {
   // =====================================================================
   switchMode(mode) {
     this.activeMode = mode;
-    this.el.tabModeView.classList.toggle('active', mode === 'view');
-    this.el.tabModeComment.classList.toggle('active', mode === 'comment');
-    this.el.tabModeSign.classList.toggle('active', mode === 'sign');
+    this.el.tabModeView?.classList.toggle('active', mode === 'view');
+    this.el.tabModeEdit?.classList.toggle('active', mode === 'edit');
+    this.el.tabModeComment?.classList.toggle('active', mode === 'comment');
+    this.el.tabModeSign?.classList.toggle('active', mode === 'sign');
     this.el.tabModeForm?.classList.toggle('active', mode === 'form');
 
+    if (this.el.contextualToolbar) this.el.contextualToolbar.style.display = (mode === 'comment') ? 'flex' : 'none';
+    if (this.el.fillsignToolbar) this.el.fillsignToolbar.style.display = (mode === 'sign') ? 'flex' : 'none';
+    if (this.el.prepareFormToolbar) this.el.prepareFormToolbar.style.display = (mode === 'form') ? 'flex' : 'none';
+    if (this.el.editPdfToolbar) this.el.editPdfToolbar.style.display = (mode === 'edit') ? 'flex' : 'none';
+
     if (mode === 'comment') {
-      this.el.contextualToolbar.style.display = 'flex';
-      this.el.fillsignToolbar.style.display = 'none';
-      if (this.el.prepareFormToolbar) this.el.prepareFormToolbar.style.display = 'none';
       this.selectRailTab('comments');
       this.showToast('Switched to Comment & Markup Mode');
     } else if (mode === 'sign') {
-      this.el.contextualToolbar.style.display = 'none';
-      this.el.fillsignToolbar.style.display = 'flex';
-      if (this.el.prepareFormToolbar) this.el.prepareFormToolbar.style.display = 'none';
       this.showToast('Switched to Fill & Sign Mode');
     } else if (mode === 'form') {
-      this.el.contextualToolbar.style.display = 'none';
-      this.el.fillsignToolbar.style.display = 'none';
-      if (this.el.prepareFormToolbar) this.el.prepareFormToolbar.style.display = 'flex';
       this.showToast('Switched to Prepare Form / Form Designer Mode');
+    } else if (mode === 'edit') {
+      this.showToast('Edit PDF: Converting document and detecting all text boxes...');
+      if (!this.isDocumentOcredForEdit) {
+        this.runEditPdfAutoOcr();
+      } else {
+        this.redrawAllEditBoxes();
+      }
     } else {
-      this.el.contextualToolbar.style.display = 'none';
-      this.el.fillsignToolbar.style.display = 'none';
-      if (this.el.prepareFormToolbar) this.el.prepareFormToolbar.style.display = 'none';
+      this.redrawAllEditBoxes();
     }
 
     // Toggle drawing/pen/shape capture state on canvases
@@ -1835,6 +1874,7 @@ class AcrobatReaderApp {
     window.addEventListener('mouseup', () => {
       if (isDragging) {
         isDragging = false;
+        annotObj.isModified = true;
         this.el.docStatusIndicator.textContent = 'Modified';
       }
     });
@@ -1943,8 +1983,7 @@ class AcrobatReaderApp {
         this.openExportFormatsModal();
         break;
       case 'Edit PDF':
-        this.switchMode('comment');
-        this.showToast('Edit PDF: Comment & markup tools activated');
+        this.switchMode('edit');
         break;
       case 'Create PDF':
         this.el.fileInput.click();
@@ -2326,6 +2365,24 @@ class AcrobatReaderApp {
     this.el.modalProperties.style.display = 'flex';
   }
 
+  hexToPdfRgb(hex) {
+    if (!hex || typeof hex !== 'string') return PDFLib.rgb(0.07, 0.07, 0.07);
+    const cleaned = hex.replace('#', '');
+    if (cleaned.length === 3) {
+      const r = parseInt(cleaned[0] + cleaned[0], 16) / 255;
+      const g = parseInt(cleaned[1] + cleaned[1], 16) / 255;
+      const b = parseInt(cleaned[2] + cleaned[2], 16) / 255;
+      return PDFLib.rgb(isNaN(r) ? 0.07 : r, isNaN(g) ? 0.07 : g, isNaN(b) ? 0.07 : b);
+    }
+    if (cleaned.length === 6) {
+      const r = parseInt(cleaned.substring(0, 2), 16) / 255;
+      const g = parseInt(cleaned.substring(2, 4), 16) / 255;
+      const b = parseInt(cleaned.substring(4, 6), 16) / 255;
+      return PDFLib.rgb(isNaN(r) ? 0.07 : r, isNaN(g) ? 0.07 : g, isNaN(b) ? 0.07 : b);
+    }
+    return PDFLib.rgb(0.07, 0.07, 0.07);
+  }
+
   hasNonWinAnsi(text) {
     if (!text) return false;
     for (let i = 0; i < text.length; i++) {
@@ -2550,9 +2607,136 @@ class AcrobatReaderApp {
             }
           }
         }
+
+        // 3. Burn Edit PDF Mode Text and Object Modifications
+        const editBoxes = this.editPdfBoxes.get(pageNum) || [];
+        for (const box of editBoxes) {
+          const boxW = (box.width || 60) / this.scale;
+          const boxH = (box.height || 20) / this.scale;
+          const pdfX = (box.x || 0) / this.scale;
+          const pdfY = height - ((box.y || 0) / this.scale) - boxH;
+
+          if (box.isDeleted) {
+            // Whiteout original text/object
+            page.drawRectangle({
+              x: Math.max(0, pdfX - 2),
+              y: Math.max(0, pdfY - 2),
+              width: boxW + 4,
+              height: boxH + 4,
+              color: PDFLib.rgb(1, 1, 1),
+              borderWidth: 0
+            });
+            continue;
+          }
+
+          if (box.type === 'image' && box.dataUrl) {
+            try {
+              const imgBytes = await fetch(box.dataUrl).then(res => res.arrayBuffer());
+              let embeddedImg;
+              if (box.dataUrl.startsWith('data:image/jpeg') || box.dataUrl.startsWith('data:image/jpg')) {
+                embeddedImg = await pdfDoc.embedJpg(imgBytes);
+              } else {
+                embeddedImg = await pdfDoc.embedPng(imgBytes);
+              }
+              page.drawImage(embeddedImg, {
+                x: pdfX,
+                y: pdfY,
+                width: boxW,
+                height: boxH
+              });
+            } catch (imgErr) {
+              console.warn('Error embedding edit image object:', imgErr);
+            }
+            continue;
+          }
+
+          if (box.type === 'image_box' && box.isModified) {
+            // Existing object moved or modified - whiteout original spot
+            page.drawRectangle({
+              x: Math.max(0, pdfX - 2),
+              y: Math.max(0, pdfY - 2),
+              width: boxW + 4,
+              height: boxH + 4,
+              color: PDFLib.rgb(1, 1, 1),
+              borderWidth: 0
+            });
+            continue;
+          }
+
+          if (box.isModified) {
+            // Whiteout original text underneath
+            page.drawRectangle({
+              x: Math.max(0, pdfX - 1),
+              y: Math.max(0, pdfY - 1),
+              width: boxW + 2,
+              height: boxH + 2,
+              color: PDFLib.rgb(1, 1, 1),
+              borderWidth: 0
+            });
+
+            // Draw updated text
+            const textToDraw = box.currentText || '';
+            if (textToDraw.trim()) {
+              const fontSize = (box.fontSize || 14) / this.scale;
+              const isUnicodeOrBangla = this.hasNonWinAnsi(textToDraw) || 
+                                       (box.fontFamily && (box.fontFamily.includes('Bengali') || box.fontFamily.includes('Siliguri') || box.fontFamily.includes('Kalpurush')));
+              
+              if (isUnicodeOrBangla) {
+                try {
+                  const rendered = await this.renderTextToPngBytes(
+                    textToDraw,
+                    fontSize,
+                    box.color || '#111111',
+                    box.fontFamily
+                  );
+                  const pngImage = await pdfDoc.embedPng(rendered.bytes);
+                  page.drawImage(pngImage, {
+                    x: pdfX,
+                    y: height - ((box.y || 0) / this.scale) - rendered.height,
+                    width: rendered.width,
+                    height: rendered.height
+                  });
+                } catch (renderErr) {
+                  console.warn('Unicode PNG render error in Edit PDF export:', renderErr);
+                }
+              } else {
+                try {
+                  const lines = textToDraw.split('\n');
+                  const lineHeight = fontSize * 1.35;
+                  lines.forEach((line, lIdx) => {
+                    if (line) {
+                      page.drawText(line, {
+                        x: pdfX + 2,
+                        y: (height - ((box.y || 0) / this.scale) - fontSize) - (lIdx * lineHeight),
+                        size: fontSize,
+                        font: helveticaFont,
+                        color: this.hexToPdfRgb(box.color || '#111111')
+                      });
+                    }
+                  });
+                } catch (drawErr) {
+                  console.warn('drawText error in Edit PDF export, fallback to PNG:', drawErr);
+                  const rendered = await this.renderTextToPngBytes(
+                    textToDraw,
+                    fontSize,
+                    box.color || '#111111',
+                    box.fontFamily
+                  );
+                  const pngImage = await pdfDoc.embedPng(rendered.bytes);
+                  page.drawImage(pngImage, {
+                    x: pdfX,
+                    y: height - ((box.y || 0) / this.scale) - rendered.height,
+                    width: rendered.width,
+                    height: rendered.height
+                  });
+                }
+              }
+            }
+          }
+        }
       }
 
-      // 3. Embed all files in this.attachmentsList
+      // 4. Embed all files in this.attachmentsList
       for (const att of this.attachmentsList) {
         try {
           await pdfDoc.attach(att.bytes, att.name, {
@@ -3389,6 +3573,575 @@ class AcrobatReaderApp {
       console.error('Redaction failed:', err);
       this.showToast('Failed to apply permanent redactions: ' + err.message);
     }
+  }
+
+  // =====================================================================
+  // CONTINUOUS TRACK: EDIT PDF STUDIO & AUTO-OCR BOUNDING BOX ENGINE
+  // =====================================================================
+  setupEditPdfToolbarEvents() {
+    this.el.btnEditAddText?.addEventListener('click', () => {
+      this.activeEditPdfTool = (this.activeEditPdfTool === 'addText') ? 'select' : 'addText';
+      this.el.btnEditAddText.classList.toggle('active', this.activeEditPdfTool === 'addText');
+      if (this.activeEditPdfTool === 'addText') {
+        this.showToast('Click anywhere on the document to add a new editable text box');
+      }
+    });
+
+    this.el.btnEditAddImage?.addEventListener('click', () => {
+      this.el.editImageFileInput?.click();
+    });
+
+    this.el.editImageFileInput?.addEventListener('change', (e) => {
+      this.handleEditImageUpload(e);
+    });
+
+    this.el.btnEditReocr?.addEventListener('click', () => {
+      this.runEditPdfAutoOcr(true);
+    });
+
+    this.el.btnEditDone?.addEventListener('click', () => {
+      this.switchMode('view');
+    });
+
+    this.el.btnSaveEditPdf?.addEventListener('click', () => {
+      this.exportAnnotatedPdf();
+    });
+  }
+
+  handleEditImageUpload(e) {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (loadEv) => {
+      const dataUrl = loadEv.target.result;
+      const pageNum = this.currentPage;
+      const newObj = {
+        id: `img_${Date.now()}`,
+        type: 'image',
+        dataUrl: dataUrl,
+        pageNum: pageNum,
+        x: 80,
+        y: 100,
+        width: 200,
+        height: 150,
+        isModified: true,
+        isDeleted: false
+      };
+
+      if (!this.editPdfBoxes.has(pageNum)) {
+        this.editPdfBoxes.set(pageNum, []);
+      }
+      this.editPdfBoxes.get(pageNum).push(newObj);
+      this.redrawPageEditBoxes(pageNum);
+      this.el.docStatusIndicator.textContent = 'Modified';
+      this.showToast(`Image object added to Page ${pageNum}. You can move or delete it.`);
+    };
+    reader.readAsDataURL(file);
+    e.target.value = '';
+  }
+
+  handleEditPdfCanvasClick(pageNum, x, y) {
+    if (this.activeMode !== 'edit' || this.activeEditPdfTool !== 'addText') return;
+
+    const newBox = {
+      id: `edit_box_${pageNum}_custom_${Date.now()}`,
+      pageNum: pageNum,
+      x: x,
+      y: y,
+      width: 220,
+      height: 36,
+      originalText: '',
+      currentText: 'এখানে লিখুন / Type text here',
+      fontSize: 14,
+      fontFamily: "'Noto Sans Bengali', sans-serif",
+      color: '#111111',
+      isModified: true,
+      isDeleted: false
+    };
+
+    if (!this.editPdfBoxes.has(pageNum)) {
+      this.editPdfBoxes.set(pageNum, []);
+    }
+    this.editPdfBoxes.get(pageNum).push(newBox);
+    this.redrawPageEditBoxes(pageNum);
+    this.activeEditPdfTool = 'select';
+    this.el.btnEditAddText?.classList.remove('active');
+    this.el.docStatusIndicator.textContent = 'Modified';
+    this.showToast('Placed new editable text box on Page ' + pageNum);
+  }
+
+  async runEditPdfAutoOcr(force = false) {
+    if (!this.pdfDoc) {
+      this.showToast('Please open a PDF document first.');
+      return;
+    }
+
+    if (this.isDocumentOcredForEdit && !force) {
+      this.redrawAllEditBoxes();
+      return;
+    }
+
+    if (this.el.modalEditOcrProgress) {
+      this.el.modalEditOcrProgress.style.display = 'flex';
+      this.el.editOcrProgressFill.style.width = '0%';
+      this.el.editOcrPercentageLabel.textContent = '0%';
+      this.el.editOcrStatusMessage.textContent = 'Analyzing document layout & font encoding...';
+      this.el.editOcrPageCount.textContent = `Page 1 of ${this.totalPages}`;
+    }
+
+    this.editPdfBoxes.clear();
+    let totalBoxesDetected = 0;
+
+    for (let pageNum = 1; pageNum <= this.totalPages; pageNum++) {
+      const startPct = Math.round(((pageNum - 1) / this.totalPages) * 100);
+      if (this.el.editOcrProgressFill) {
+        this.el.editOcrProgressFill.style.width = `${Math.max(5, startPct)}%`;
+        this.el.editOcrPercentageLabel.textContent = `${Math.max(5, startPct)}%`;
+        this.el.editOcrPageCount.textContent = `Page ${pageNum} of ${this.totalPages}`;
+        this.el.editOcrStatusMessage.textContent = `Recognizing text blocks & objects on Page ${pageNum}...`;
+      }
+      await new Promise(r => setTimeout(r, 60));
+
+      const page = await this.pdfDoc.getPage(pageNum);
+      const viewport = page.getViewport({ scale: this.scale });
+      const textContent = await page.getTextContent();
+      const pageBoxes = [];
+
+      if (textContent.items && textContent.items.length > 0) {
+        // Digital PDF: Cluster text items into coherent paragraph/heading bounding boxes
+        const items = textContent.items.filter(item => item.str && item.str.trim().length > 0);
+        
+        // Group items by baseline Y and vertical proximity
+        const lines = [];
+        items.forEach(item => {
+          const [vx, vy] = viewport.convertToViewportPoint(item.transform[4], item.transform[5]);
+          const fontHeight = Math.max(10, (item.height || Math.abs(item.transform[0])) * this.scale);
+          const fontWidth = Math.max(6, item.width * this.scale);
+          const top = vy - fontHeight;
+          const left = vx;
+
+          let joined = false;
+          for (const line of lines) {
+            if (Math.abs(line.bottomY - vy) < 5) {
+              line.items.push({ item, left, top, fontWidth, fontHeight });
+              line.left = Math.min(line.left, left);
+              line.top = Math.min(line.top, top);
+              line.right = Math.max(line.right, left + fontWidth);
+              line.bottom = Math.max(line.bottom, vy);
+              line.text += ' ' + item.str;
+              joined = true;
+              break;
+            }
+          }
+          if (!joined) {
+            lines.push({
+              left: left,
+              top: top,
+              right: left + fontWidth,
+              bottom: vy,
+              bottomY: vy,
+              fontSize: fontHeight,
+              text: item.str,
+              items: [{ item, left, top, fontWidth, fontHeight }]
+            });
+          }
+        });
+
+        // Cluster adjacent lines into paragraph boxes
+        const paragraphs = [];
+        lines.sort((a, b) => a.top - b.top);
+
+        lines.forEach(line => {
+          let merged = false;
+          for (const p of paragraphs) {
+            const lineGap = line.top - p.bottom;
+            const horizontalOverlap = !(line.right < p.left || line.left > p.right);
+            if (lineGap >= -3 && lineGap <= (line.fontSize * 1.6) && horizontalOverlap) {
+              p.lines.push(line);
+              p.left = Math.min(p.left, line.left);
+              p.top = Math.min(p.top, line.top);
+              p.right = Math.max(p.right, line.right);
+              p.bottom = Math.max(p.bottom, line.bottom);
+              p.text += '\n' + line.text;
+              merged = true;
+              break;
+            }
+          }
+          if (!merged) {
+            paragraphs.push({
+              left: line.left,
+              top: line.top,
+              right: line.right,
+              bottom: line.bottom,
+              fontSize: line.fontSize,
+              lines: [line],
+              text: line.text
+            });
+          }
+        });
+
+        paragraphs.forEach((p, idx) => {
+          const padding = 4;
+          const box = {
+            id: `edit_box_${pageNum}_${idx}_${Date.now()}`,
+            pageNum: pageNum,
+            x: Math.max(0, p.left - padding),
+            y: Math.max(0, p.top - padding),
+            width: Math.max(60, (p.right - p.left) + (padding * 2)),
+            height: Math.max(22, (p.bottom - p.top) + (padding * 2)),
+            originalText: p.text,
+            currentText: p.text,
+            fontSize: Math.round(p.fontSize),
+            fontFamily: this.hasNonWinAnsi(p.text) ? "'Noto Sans Bengali', sans-serif" : "Helvetica, Arial, sans-serif",
+            color: '#111111',
+            isModified: false,
+            isDeleted: false
+          };
+          pageBoxes.push(box);
+        });
+      } else {
+        // Scanned Document: Use canvas visual detection or Tesseract OCR
+        if (typeof Tesseract !== 'undefined') {
+          try {
+            const canvas = document.createElement('canvas');
+            canvas.width = viewport.width;
+            canvas.height = viewport.height;
+            const ctx = canvas.getContext('2d');
+            await page.render({ canvasContext: ctx, viewport: viewport }).promise;
+
+            const res = await Tesseract.recognize(canvas, 'ben+eng');
+            if (res.data && res.data.lines && res.data.lines.length > 0) {
+              res.data.lines.forEach((l, idx) => {
+                if (l.text.trim()) {
+                  pageBoxes.push({
+                    id: `edit_box_${pageNum}_ocr_${idx}_${Date.now()}`,
+                    pageNum: pageNum,
+                    x: l.bbox.x0,
+                    y: l.bbox.y0,
+                    width: Math.max(60, l.bbox.x1 - l.bbox.x0),
+                    height: Math.max(20, l.bbox.y1 - l.bbox.y0),
+                    originalText: l.text.trim(),
+                    currentText: l.text.trim(),
+                    fontSize: Math.max(12, Math.round(l.bbox.y1 - l.bbox.y0) * 0.7),
+                    fontFamily: "'Noto Sans Bengali', sans-serif",
+                    color: '#111111',
+                    isModified: false,
+                    isDeleted: false
+                  });
+                }
+              });
+            }
+          } catch (ocrErr) {
+            console.warn('Scanned OCR fallback warning:', ocrErr);
+          }
+        }
+      }
+
+      // Detect embedded image/figure objects on page
+      try {
+        const ops = await page.getOperatorList();
+        let currentTransform = [1, 0, 0, 1, 0, 0];
+        for (let i = 0; i < ops.fnArray.length; i++) {
+          const fn = ops.fnArray[i];
+          const args = ops.argsArray[i];
+          if (pdfjsLib.OPS && fn === pdfjsLib.OPS.transform) {
+            currentTransform = args;
+          } else if (
+            pdfjsLib.OPS &&
+            (fn === pdfjsLib.OPS.paintImageXObject || fn === pdfjsLib.OPS.paintInlineImageXObject)
+          ) {
+            const [vx, vy] = viewport.convertToViewportPoint(currentTransform[4], currentTransform[5]);
+            const imgW = Math.abs(currentTransform[0]) * this.scale;
+            const imgH = Math.abs(currentTransform[3]) * this.scale;
+            if (imgW > 25 && imgH > 25 && (imgW * imgH) < (viewport.width * viewport.height * 0.96)) {
+              pageBoxes.push({
+                id: `obj_box_${pageNum}_img_${i}_${Date.now()}`,
+                pageNum: pageNum,
+                type: 'image_box',
+                x: Math.max(0, vx),
+                y: Math.max(0, vy - imgH),
+                width: imgW,
+                height: imgH,
+                isModified: false,
+                isDeleted: false
+              });
+            }
+          }
+        }
+      } catch (opErr) {
+        // Safe fallback if operator list parsing is not supported
+      }
+
+      this.editPdfBoxes.set(pageNum, pageBoxes);
+      totalBoxesDetected += pageBoxes.length;
+      this.redrawPageEditBoxes(pageNum);
+
+      const finishPct = Math.round((pageNum / this.totalPages) * 100);
+      if (this.el.editOcrProgressFill) {
+        this.el.editOcrProgressFill.style.width = `${finishPct}%`;
+        this.el.editOcrPercentageLabel.textContent = `${finishPct}%`;
+      }
+      await new Promise(r => setTimeout(r, 40));
+    }
+
+    if (this.el.modalEditOcrProgress) {
+      this.el.editOcrProgressFill.style.width = '100%';
+      this.el.editOcrPercentageLabel.textContent = '100%';
+      this.el.editOcrStatusMessage.textContent = 'Document ready for editing!';
+      await new Promise(r => setTimeout(r, 450));
+      this.el.modalEditOcrProgress.style.display = 'none';
+    }
+
+    this.isDocumentOcredForEdit = true;
+    if (this.el.editBoxCountBadge) {
+      this.el.editBoxCountBadge.textContent = `${totalBoxesDetected} Boxes Active`;
+    }
+    this.showToast(`Auto-OCR Complete! ${totalBoxesDetected} interactive text & object boxes highlighted.`);
+  }
+
+  redrawPageEditBoxes(pageNum) {
+    const container = document.getElementById(`page-container-${pageNum}`);
+    if (!container) return;
+
+    const overlayLayer = container.querySelector('.pdf-annotation-layer');
+    if (!overlayLayer) return;
+
+    // Remove existing edit boxes on this page
+    overlayLayer.querySelectorAll('.acrobat-edit-box, .acrobat-object-box, .edit-box-whiteout').forEach(el => el.remove());
+
+    const isEditMode = this.activeMode === 'edit';
+    const boxes = this.editPdfBoxes.get(pageNum) || [];
+    boxes.forEach(box => {
+      if (box.isDeleted) {
+        // If deleted, keep an opaque whiteout mask over original text so it is not visible
+        const mask = document.createElement('div');
+        mask.className = 'edit-box-whiteout';
+        mask.style.position = 'absolute';
+        mask.style.left = `${box.x}px`;
+        mask.style.top = `${box.y}px`;
+        mask.style.width = `${box.width}px`;
+        mask.style.height = `${box.height}px`;
+        mask.style.background = '#ffffff';
+        mask.style.zIndex = '30';
+        overlayLayer.appendChild(mask);
+        return;
+      }
+
+      if (!isEditMode && !box.isModified) {
+        // In view mode, unmodified items are already cleanly displayed by PDF canvas
+        return;
+      }
+
+      if (box.type === 'image') {
+        // Render Custom Added Image Object Box
+        const objBox = document.createElement('div');
+        objBox.className = 'acrobat-object-box';
+        objBox.dataset.boxId = box.id;
+        objBox.style.left = `${box.x}px`;
+        objBox.style.top = `${box.y}px`;
+        objBox.style.width = `${box.width}px`;
+        objBox.style.height = `${box.height}px`;
+
+        objBox.innerHTML = `
+          <div class="object-box-actions">
+            <button class="fill-act-btn btn-del-obj" title="Delete Object">🗑</button>
+          </div>
+          <img src="${box.dataUrl}" style="width: 100%; height: 100%; object-fit: contain; pointer-events: none;">
+        `;
+
+        if (!isEditMode) {
+          objBox.style.border = 'none';
+          objBox.style.boxShadow = 'none';
+          objBox.querySelector('.object-box-actions')?.remove();
+        } else {
+          objBox.querySelector('.btn-del-obj')?.addEventListener('click', (ev) => {
+            ev.stopPropagation();
+            box.isDeleted = true;
+            box.isModified = true;
+            this.redrawPageEditBoxes(pageNum);
+            this.el.docStatusIndicator.textContent = 'Modified';
+          });
+          this.makeStampDraggable(objBox, box);
+        }
+
+        overlayLayer.appendChild(objBox);
+        return;
+      }
+
+      if (box.type === 'image_box') {
+        // Render Existing Object Box
+        if (!isEditMode) return; // Unmodified existing object is already on the canvas
+
+        const objBox = document.createElement('div');
+        objBox.className = 'acrobat-object-box';
+        objBox.dataset.boxId = box.id;
+        objBox.style.left = `${box.x}px`;
+        objBox.style.top = `${box.y}px`;
+        objBox.style.width = `${box.width}px`;
+        objBox.style.height = `${box.height}px`;
+
+        objBox.innerHTML = `
+          <div class="object-box-actions">
+            <button class="fill-act-btn btn-del-obj" title="Delete Object">🗑</button>
+          </div>
+          <span style="position: absolute; bottom: 2px; left: 4px; font-size: 10px; background: rgba(0,0,0,0.65); color: #ff9800; padding: 1px 4px; border-radius: 2px; pointer-events: none;">Object</span>
+        `;
+
+        objBox.querySelector('.btn-del-obj')?.addEventListener('click', (ev) => {
+          ev.stopPropagation();
+          box.isDeleted = true;
+          box.isModified = true;
+          this.redrawPageEditBoxes(pageNum);
+          this.el.docStatusIndicator.textContent = 'Modified';
+          this.showToast('Object deleted & whited out.');
+        });
+
+        this.makeStampDraggable(objBox, box);
+        overlayLayer.appendChild(objBox);
+        return;
+      }
+
+      // Render Text Box
+      const boxEl = document.createElement('div');
+      boxEl.className = 'acrobat-edit-box';
+      boxEl.dataset.boxId = box.id;
+      boxEl.style.left = `${box.x}px`;
+      boxEl.style.top = `${box.y}px`;
+      boxEl.style.width = `${box.width}px`;
+      boxEl.style.minHeight = `${box.height}px`;
+
+      boxEl.innerHTML = `
+        <div class="edit-box-toolbar">
+          <button type="button" class="edit-tb-btn btn-font-dec" title="Decrease font size">A-</button>
+          <button type="button" class="edit-tb-btn btn-font-inc" title="Increase font size">A+</button>
+          <select class="edit-tb-select edit-font-select" title="Change font family">
+            <option value="'Noto Sans Bengali', sans-serif">বাংলা (Noto Sans)</option>
+            <option value="'Noto Serif Bengali', serif">বাংলা (Noto Serif)</option>
+            <option value="'Hind Siliguri', sans-serif">বাংলা (Hind Siliguri)</option>
+            <option value="'Kalpurush', sans-serif">বাংলা (Kalpurush)</option>
+            <option value="Helvetica, Arial, sans-serif">Helvetica</option>
+            <option value="'Times New Roman', serif">Times</option>
+          </select>
+          <input type="color" class="edit-tb-color" value="${box.color || '#111111'}" title="Text Color">
+          <button type="button" class="edit-tb-btn btn-del-box" title="Delete text block">🗑</button>
+          <span class="edit-tb-drag" title="Drag to reposition">⠿</span>
+        </div>
+        <div contenteditable="true" class="acrobat-edit-content" style="font-size: ${box.fontSize}px; font-family: ${box.fontFamily}; color: ${box.color};">${box.currentText}</div>
+      `;
+
+      const contentEl = boxEl.querySelector('.acrobat-edit-content');
+      const fontSelect = boxEl.querySelector('.edit-font-select');
+      const colorInput = boxEl.querySelector('.edit-tb-color');
+
+      if (fontSelect && box.fontFamily) {
+        fontSelect.value = box.fontFamily;
+      }
+
+      if (!isEditMode) {
+        boxEl.style.border = 'none';
+        boxEl.style.boxShadow = 'none';
+        boxEl.querySelector('.edit-box-toolbar')?.remove();
+        contentEl.removeAttribute('contenteditable');
+      } else {
+        // Live content editing
+        contentEl.addEventListener('input', () => {
+          box.currentText = contentEl.innerText;
+          box.isModified = true;
+          this.el.docStatusIndicator.textContent = 'Modified';
+        });
+
+        // Increase font
+        boxEl.querySelector('.btn-font-inc')?.addEventListener('click', (e) => {
+          e.stopPropagation();
+          box.fontSize = Math.min(64, box.fontSize + 2);
+          contentEl.style.fontSize = `${box.fontSize}px`;
+          box.isModified = true;
+          this.el.docStatusIndicator.textContent = 'Modified';
+        });
+
+        // Decrease font
+        boxEl.querySelector('.btn-font-dec')?.addEventListener('click', (e) => {
+          e.stopPropagation();
+          box.fontSize = Math.max(8, box.fontSize - 2);
+          contentEl.style.fontSize = `${box.fontSize}px`;
+          box.isModified = true;
+          this.el.docStatusIndicator.textContent = 'Modified';
+        });
+
+        // Change font family
+        fontSelect?.addEventListener('change', (e) => {
+          e.stopPropagation();
+          box.fontFamily = fontSelect.value;
+          contentEl.style.fontFamily = box.fontFamily;
+          box.isModified = true;
+          this.el.docStatusIndicator.textContent = 'Modified';
+        });
+
+        // Change text color
+        colorInput?.addEventListener('input', (e) => {
+          box.color = colorInput.value;
+          contentEl.style.color = box.color;
+          box.isModified = true;
+          this.el.docStatusIndicator.textContent = 'Modified';
+        });
+
+        // Delete block
+        boxEl.querySelector('.btn-del-box')?.addEventListener('click', (e) => {
+          e.stopPropagation();
+          box.isDeleted = true;
+          box.isModified = true;
+          this.redrawPageEditBoxes(pageNum);
+          this.el.docStatusIndicator.textContent = 'Modified';
+          this.showToast('Text block deleted & whited out.');
+        });
+
+        // Make draggable using drag handle
+        this.makeEditBoxDraggable(boxEl, box);
+      }
+
+      overlayLayer.appendChild(boxEl);
+    });
+  }
+
+  redrawAllEditBoxes() {
+    for (let pageNum = 1; pageNum <= this.totalPages; pageNum++) {
+      this.redrawPageEditBoxes(pageNum);
+    }
+  }
+
+  makeEditBoxDraggable(boxEl, box) {
+    const dragHandle = boxEl.querySelector('.edit-tb-drag');
+    if (!dragHandle) return;
+
+    let isDragging = false;
+    let startX = 0;
+    let startY = 0;
+
+    dragHandle.addEventListener('mousedown', (e) => {
+      isDragging = true;
+      startX = e.clientX - box.x;
+      startY = e.clientY - box.y;
+      boxEl.style.zIndex = '100';
+      e.stopPropagation();
+    });
+
+    window.addEventListener('mousemove', (e) => {
+      if (!isDragging) return;
+      box.x = Math.max(0, e.clientX - startX);
+      box.y = Math.max(0, e.clientY - startY);
+      boxEl.style.left = `${box.x}px`;
+      boxEl.style.top = `${box.y}px`;
+      box.isModified = true;
+      this.el.docStatusIndicator.textContent = 'Modified';
+    });
+
+    window.addEventListener('mouseup', () => {
+      if (isDragging) {
+        isDragging = false;
+        boxEl.style.zIndex = '35';
+      }
+    });
   }
 
   // =====================================================================
